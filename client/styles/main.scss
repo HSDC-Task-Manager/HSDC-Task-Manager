@@ -1,7 +1,11 @@
-div {
-  background-color: red;
-}
+@import 'variables/variables';
 
-h1 {
-  color: blue;
-}
+@import 'pages/reset';
+@import 'pages/login';
+@import 'pages/all';
+@import 'pages/home';
+
+@import 'components/buttons';
+@import 'components/cards';
+@import 'components/columns';
+@import 'components/modals';

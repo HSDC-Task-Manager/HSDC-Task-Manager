@@ -1,0 +1,43 @@
+.modal-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+
+.modal-home {
+  background-color: $color1;
+  color: $color3;
+  border-radius: 15px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-column-input {
+  width: 150px;
+  height: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  background-color: $color2;
+}
+
+.modal-text-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.modal-button-cont {
+  display: flex;
+  gap: 20px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}

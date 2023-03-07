@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node server/server.js",
+    "start": "NODE_ENV=production nodemon server/server.js",
     "build": "NODE_ENV=production webpack",
     "dev": "NODE_ENV=development nodemon server/server.js & NODE_ENV=development webpack serve"
   },
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/WCRI56-Team-GS/Scratch-Project#readme",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "react": "^18.2.0",

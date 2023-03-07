@@ -1,14 +1,34 @@
-const path = require('path');
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const userController = require("./controllers/userController");
+const sessionController = require("./controllers/sessionController");
+const cookieController = require("./controllers/cookieController");
+const boardController = require("./controllers/boardController");
+const cookieParser = require("cookie-parser");
 
 // setup app and port
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const mongoURI =
+  "mongodb+srv://shendo87:UIOqlCfrXxZJYeJL@cluster0.kzkmgom.mongodb.net/?retryWrites=true&w=majority";
+mongoose
+  .connect(mongoURI, {
+    // options for the connect method to parse the URI
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // sets the name of the DB that our collections are part of
+    dbName: "scratch_project",
+  })
+  .then(() => console.log("Connected to Mongo DB."))
+  .catch((err) => console.log(err));
+
 // handle parsing request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // enable ALL CORS requests
 app.use(cors());
@@ -16,8 +36,52 @@ app.use(cors());
 // handle requests for static files (bundle.js)
 app.use("/build", express.static(path.resolve(__dirname, "../build")));
 
-// define route handlers
+// route handlers
+app.post('/api', 
+  sessionController.isLoggedIn,
+  userController.getBoardIds, 
+  boardController.getBoards, 
+  (req, res) => {
+    res.status(200).json(res.locals.boards)
+})
 
+app.post(
+  "/login",
+  userController.verifyUser,
+  sessionController.startSession,
+  cookieController.setSSIDCookie,
+  (req, res) => {
+    // what should happen here on successful log in?
+    console.log("completing post request to '/login");
+    // res.redirect('/secret');
+    res.sendStatus(200);
+    // res.redirect("/");
+  }
+);
+
+app.post(
+  "/signup",
+  userController.createUser,
+  sessionController.startSession,
+  cookieController.setSSIDCookie,
+  (req, res) => {
+    // what should happen here on successful log in?
+    console.log("completing post request to '/signup");
+    // res.redirect('/secret');
+    res.redirect("/");
+  }
+);
+
+app.use('/sessionTest',
+  sessionController.isLoggedIn,
+  (req, res) => {
+    console.log('user isLoggedIn successfully.  Returning status 418');
+    res.sendStatus(418);
+  })
+
+app.use("/api", sessionController.isLoggedIn, (req, res) => {
+  console.log('completing request to "/api"');
+});
 
 // server index.html
 app.get("/", (req, res) => {
@@ -33,7 +97,7 @@ app.use((err, req, res, next) => {
   const defaultErr = {
     log: "Express error handler caught unknown middleware error",
     status: 500,
-    message: { err: "An error occurred" },
+    message: { err: "An error occurred" + err },
   };
   const errorObj = Object.assign({}, defaultErr, err);
   console.log(errorObj.log);

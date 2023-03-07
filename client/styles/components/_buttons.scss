@@ -1,0 +1,20 @@
+button:hover {
+  filter: brightness(90%);
+}
+
+button {
+  background-color: $color5;
+  box-shadow: 0 0 5px $color1;
+  border-radius: 5px;
+  border: none;
+  padding: 10px;
+}
+
+.submit {
+  margin-top: 5px;
+  width: 100%;
+}
+
+.logOut {
+  
+}
