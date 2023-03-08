@@ -1,29 +1,31 @@
 {
-  "name": "scratch-project",
+  "name": "hsdc-task-manager",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=production nodemon server/server.js",
     "build": "NODE_ENV=production webpack",
-    "dev": "NODE_ENV=development nodemon server/server.js & NODE_ENV=development webpack serve"
+    "dev": "NODE_ENV=development nodemon server/server.js & NODE_ENV=development webpack serve --open"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/WCRI56-Team-GS/Scratch-Project.git"
+    "url": "git+https://github.com/HSDC-Task-Manager/HSDC-Task-Manager.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/WCRI56-Team-GS/Scratch-Project/issues"
+    "url": "https://github.com/HSDC-Task-Manager/HSDC-Task-Manager/issues"
   },
-  "homepage": "https://github.com/WCRI56-Team-GS/Scratch-Project#readme",
+  "homepage": "https://github.com/HSDC-Task-Manager/HSDC-Task-Manager#readme",
   "dependencies": {
-    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "mongoose": "^7.0.1",
+    "express-session": "^1.17.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router": "^6.8.2",
     "react-router-dom": "^6.8.2",
     "webpack": "^5.75.0"
   },
