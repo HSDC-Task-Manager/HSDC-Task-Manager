@@ -9,19 +9,17 @@ function UserProvider({ children }) {
   const [ user, setUser ] = useState("");
   const [ password, setPassword ] = useState("")
 
-  
-
   return (
-    <UserContext.Provider value={[signUpToggle, setSignUpToggle]}> 
-      <UserContext.Provider value={[ user, setUser ]}> 
-        <UserContext.Provider value={[ password, setPassword ]}> 
+    <UserContext.Provider value={[signUpToggle, setSignUpToggle]}>
+      <UserContext.Provider value={[ user, setUser ]}>
+        <UserContext.Provider value={[ password, setPassword ]}>
         {children}
          </UserContext.Provider>
       </UserContext.Provider>
     </UserContext.Provider>
   )
 }
- 
+
 export default UserProvider;
 
 */
