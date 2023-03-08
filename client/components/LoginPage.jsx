@@ -1,11 +1,16 @@
-import React, { useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import UserContext from '../UserContext';
+import React, { useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import UserContext from "../UserContext";
 
 function LoginPage() {
   // useContext is used to access the contextValue from App.jsx
   const {
-    username, setUsername, password, setPassword, isLoggedIn, setIsLoggedIn,
+    username,
+    setUsername,
+    password,
+    setPassword,
+    isLoggedIn,
+    setIsLoggedIn,
   } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -14,31 +19,33 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      console.log("SIGN IN BUTTON FIRED IN LOGIN PAGE");
       const loginData = { username, password };
-      const result = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const result = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
-      console.log('RESULT FROM LOGIN REQUEST: ', result);
+      console.log("RESULT FROM LOGIN REQUEST: ", result);
       // TODO: fix this when the backend is ready - CS & NN
       setIsLoggedIn(true);
     } catch (error) {
-      console.log('incorrect username or password', error);
+      console.log("incorrect username or password", error);
     }
   };
 
   // sends user to homepage if successfully logged in
   useEffect(() => {
     if (isLoggedIn) {
-      navigate('/homepage');
+      console.log("GOING TO HOMEPAGE FROM LOGIN PAGE");
+      navigate("/homepage");
     }
   }, [isLoggedIn]);
 
   // sends user to signup if signup button is clicked
   const routeToSignUp = (e) => {
     e.preventDefault();
-    navigate('/signup');
+    navigate("/signup");
   };
 
   return (
@@ -76,8 +83,7 @@ function LoginPage() {
           </button>
         </form>
         <div className="login-footer">
-          Don&apos;t have an Account?
-          {' '}
+          Don&apos;t have an Account?{" "}
           <button type="button" onClick={routeToSignUp}>
             Sign up here!
           </button>

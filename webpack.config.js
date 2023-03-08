@@ -34,10 +34,13 @@ module.exports = {
     },
     port: 8080,
     proxy: {
-      "/": "http://localhost:3000",
+      "/": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
     },
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.json', '.html'],
+    extensions: [".js", ".jsx", ".json", ".html"],
   },
 };
