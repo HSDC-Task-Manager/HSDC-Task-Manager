@@ -24,6 +24,7 @@ const boardController = {};
 
 boardController.getBoards = async (req, res, next) => {
   try {
+    // jsonb_agg(json_build_object(‘name’, nameval, ‘columns’, jsonb_agg(json_build_object(…..))
     const query = await db.query("SELECT * FROM boards.......");
     res.locals.boards = query.rows;
     return next();
