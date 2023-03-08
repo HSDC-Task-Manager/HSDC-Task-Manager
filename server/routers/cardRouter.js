@@ -1,17 +1,17 @@
 //CRUD--CARDS
 //get
-app.get("/get", (req, res) => {
-  res.status(200).json("got the cards!");
+app.get("/", (req, res) => {
+  res.status(200).json("got card!");
 });
 //add
-app.post("/add", (req, res) => {
-  res.status(200).json("added a card!");
+app.post("/", (req, res) => {
+  res.status(200).json("added card!");
 });
 //delete
-app.delete("/delete", (req, res) => {
-  res.status(200).json("deleted a card!");
+app.delete("/", (req, res) => {
+  res.status(200).json("deleted card!");
 });
 //edit
-app.patch("card/edit", (req, res) => {
-  res.status(200).json("edited a card!");
+app.patch("/", (req, res) => {
+  res.status(200).json("edited card!");
 });

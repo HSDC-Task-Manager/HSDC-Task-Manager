@@ -1,6 +1,6 @@
-const fetch = {};
+const request = {};
 //TODO ALEX: need to refactor for SQL data;
-fetch.fetchBoards = (userName, setBoardState, setID) => {
+request.Boards = (userName, setBoardState, setID) => {
   fetch("/api", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -18,23 +18,24 @@ fetch.fetchBoards = (userName, setBoardState, setID) => {
 
 //COLUMNS___
 //add
-fetch.addColumn = (columnName) => {
+request.addColumn = (name) => {
+  console.log({ columnName: `${name}` });
   fetch("/column/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ columnName }),
+    body: JSON.stringify({ columnName: `${name}` }),
   })
     .then((res) => res.json())
     .then((data) => {
-      console.log("inside");
+      console.log(data);
     })
     .catch((error) => {
-      console.log(`Error in request.addBoard ${error}`);
+      console.log(`Error in request.addColumn ${error}`);
     });
 };
 
 //CARDS___
 //add a card to a specific column
-fetch.addCard = (cardTitle, cardText) => {};
+request.addCard = (cardTitle, cardText) => {};
 
-export default fetch;
+export default request;

@@ -7,6 +7,7 @@ const sessionController = require("./controllers/sessionController");
 const cookieController = require("./controllers/cookieController");
 const boardController = require("./controllers/boardController");
 const session = require("express-session");
+const columnRouter = require("./routers/columnRouter");
 
 // setup app and port
 const app = express();
@@ -52,6 +53,10 @@ app.post(
     res.status(200).json(res.locals.boards);
   }
 );
+
+//CRUD ROUTERS
+app.use("/column", columnRouter);
+app.use("/cards", cardRouter);
 
 // OLD login code - can delete when new method is confirmed working
 // app.post(

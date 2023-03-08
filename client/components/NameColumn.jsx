@@ -1,13 +1,12 @@
 import React, { Component } from "react";
-import request from "../fetch";
-import { useState, useEffect } from "react";
+import request from "../request";
+import { useState } from "react";
 
-const newColumn = () => {
+const NameColumn = () => {
   const [columnName, setColumnName] = useState("");
 
   const onHandleClick = (e) => {
     e.preventDefault();
-    console.log("column Name", column);
     request.addColumn(columnName);
   };
   return (
@@ -22,4 +21,4 @@ const newColumn = () => {
   );
 };
 
-export default newColumn;
+export default NameColumn;

@@ -1,38 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ColumnModal, CardModal } from './Modals.jsx';
-import Column from './Column.jsx';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { ColumnModal, CardModal } from "./Modals.jsx";
+import Column from "./Column.jsx";
+import CreateColumn from "./NameColumn.jsx";
+import request from "../request.js";
+import NameColumn from "./NameColumn.jsx";
 
 function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
   const [boardData, setBoardData] = useState([]);
-  const [currBoardID, setCurrBoardID] = useState('');
-
+  const [currBoardID, setCurrBoardID] = useState("");
   const navigate = useNavigate();
-
-  let renderColumns = [];
 
   // this fetches data from the server and stores the data to the boardData state
   useEffect(() => {
-    fetch('/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setBoardData(data);
-        setCurrBoardID(data[0]._id);
-      })
-      .catch((error) => {
-        console.log('Error fetching boardData in APP.jsx:', error);
-      });
+    request.Boards(username, setBoardData, setCurrBoardID);
+    // fetch("/api", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ username }),
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     setBoardData(data);
+    //     setCurrBoardID(data[0]._id);
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error fetching boardData in APP.jsx:", error);
+    //   });
   }, [isLoggedIn]);
 
-  console.log('BOARD DATA', boardData);
+  console.log("BOARD DATA", boardData);
 
   // this creates the array of columns to render
+  let renderColumns = [];
   if (boardData.length !== 0) {
     renderColumns = boardData[0].columns.map((column, index) => (
       <Column
@@ -48,7 +50,7 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
   const routeToSignIn = (e) => {
     e.preventDefault();
     setIsLoggedIn(false);
-    navigate('/');
+    navigate("/");
   };
 
   // modal logic
@@ -60,14 +62,12 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
   return (
     <div className="homeCont">
       {overlay}
-
       <header className="homeHeader">
         <h1> Home Page </h1>
         <button className="logOut" onClick={routeToSignIn}>
           LOG OUT
         </button>
       </header>
-
       <div className="boardDisplay">
         <div className="modal-box">
           {showColumnModal ? (
@@ -84,18 +84,25 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
             <></>
           )}
           {showCardModal ? (
-            <CardModal showCardModal={showCardModal} setShowCardModal={setShowCardModal} />
+            <CardModal
+              showCardModal={showCardModal}
+              setShowCardModal={setShowCardModal}
+            />
           ) : (
             <></>
           )}
         </div>
         <div className="column-container">{renderColumns}</div>
         <div>
-          <button className="addColumn" onClick={() => setShowColumnModal(true)}>
+          <button
+            className="addColumn"
+            onClick={() => setShowColumnModal(true)}
+          >
             ADD COLUMN
           </button>
         </div>
       </div>
+      <NameColumn />
     </div>
   );
 }
