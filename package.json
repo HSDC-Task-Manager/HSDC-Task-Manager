@@ -1,5 +1,5 @@
 {
-  "name": "scratch-project",
+  "name": "hsdc-task-manager",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/WCRI56-Team-GS/Scratch-Project.git"
+    "url": "git+https://github.com/HSDC-Task-Manager/HSDC-Task-Manager.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/WCRI56-Team-GS/Scratch-Project/issues"
+    "url": "https://github.com/HSDC-Task-Manager/HSDC-Task-Manager/issues"
   },
-  "homepage": "https://github.com/WCRI56-Team-GS/Scratch-Project#readme",
+  "homepage": "https://github.com/HSDC-Task-Manager/HSDC-Task-Manager#readme",
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
