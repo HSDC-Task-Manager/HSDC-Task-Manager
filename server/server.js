@@ -6,7 +6,7 @@ const userController = require("./controllers/userController");
 const sessionController = require("./controllers/sessionController");
 const cookieController = require("./controllers/cookieController");
 const boardController = require("./controllers/boardController");
-const cookieParser = require("cookie-parser");
+const session = require("express-session");
 
 // setup app and port
 const app = express();
@@ -28,7 +28,13 @@ mongoose
 // handle parsing request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(
+  session({
+    secret: "q87x6484er46gn64wsef3vbn7iwe",
+    name: "ssid",
+    saveUninitialized: false,
+  })
+);
 
 // enable ALL CORS requests
 app.use(cors());
@@ -37,27 +43,30 @@ app.use(cors());
 app.use("/build", express.static(path.resolve(__dirname, "../build")));
 
 // route handlers
-app.post('/api', 
-  sessionController.isLoggedIn,
-  userController.getBoardIds, 
-  boardController.getBoards, 
-  (req, res) => {
-    res.status(200).json(res.locals.boards)
-})
-
 app.post(
-  "/login",
-  userController.verifyUser,
-  sessionController.startSession,
-  cookieController.setSSIDCookie,
+  "/api",
+  sessionController.isLoggedIn,
+  userController.getBoardIds,
+  boardController.getBoards,
   (req, res) => {
-    // what should happen here on successful log in?
-    console.log("completing post request to '/login");
-    // res.redirect('/secret');
-    res.sendStatus(200);
-    // res.redirect("/");
+    res.status(200).json(res.locals.boards);
   }
 );
+
+// OLD login code - can delete when new method is confirmed working
+// app.post(
+//   "/login",
+//   userController.verifyUser,
+//   sessionController.startSession,
+//   cookieController.setSSIDCookie,
+//   (req, res) => {
+//     // what should happen here on successful log in?
+//     console.log("completing post request to '/login");
+//     // res.redirect('/secret');
+//     res.sendStatus(200);
+//     // res.redirect("/");
+//   }
+// );
 
 app.post(
   "/signup",
@@ -72,16 +81,24 @@ app.post(
   }
 );
 
-app.use('/sessionTest',
-  sessionController.isLoggedIn,
-  (req, res) => {
-    console.log('user isLoggedIn successfully.  Returning status 418');
-    res.sendStatus(418);
-  })
-
-app.use("/api", sessionController.isLoggedIn, (req, res) => {
-  console.log('completing request to "/api"');
+app.use("/sessionTest", sessionController.isLoggedIn, (req, res) => {
+  console.log("user isLoggedIn successfully.  Returning status 418");
+  res.sendStatus(418);
 });
+
+// REPLACING THIS WITH SESSIONS
+// app.use("/api", sessionController.isLoggedIn, (req, res) => {
+//   console.log('completing request to "/api"');
+// });
+
+// Check for active sessions
+app.get("/session", sessionController.validateSEssion, (req, res) =>
+  res.status(200).send(res.locals)
+);
+// Delete session on logout
+app.delete("/session", sessionController.deleteSession, (req, res) =>
+  res.sendStatus(200)
+);
 
 // server index.html
 app.get("/", (req, res) => {
