@@ -6,20 +6,16 @@ const db = require("../models/pgModel");
 const userController = {};
 
 // Create new user
-userController.createUser = (req, res, next) => {
-  const { username, password } = req.body;
-  console.log("in userController.createUser");
-
 userController.createUser = async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
     const userVals = [username, password, email];
     const query = await db.query(
-      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id",
+      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id;",
       userVals
     );
     res.locals.id = query.rows[0].id;
-  } catch (error) {
+  } catch (err) {
     return next({
       log: "ERROR IN userController.createUser",
       message: {
