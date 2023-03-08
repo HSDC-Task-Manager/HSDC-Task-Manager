@@ -1,5 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
-// import { CardModal } from "./Modals";
+import React from 'react';
 
 function Column({ columnName, cards, setShowCardModal }) {
   const renderCards = cards.map((card, index) => (
@@ -12,7 +11,9 @@ function Column({ columnName, cards, setShowCardModal }) {
     <div className="columnCont">
       <div>{columnName}</div>
       <div className="cardCont">{renderCards}</div>
-      <button onClick={() => setShowCardModal(true)}>ADD CARD</button>
+      <button type="button" onClick={() => setShowCardModal(true)}>
+        ADD CARD
+      </button>
     </div>
   );
 }

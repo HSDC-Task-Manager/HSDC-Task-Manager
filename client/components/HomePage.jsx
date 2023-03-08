@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ColumnModal, CardModal } from './Modals.jsx';
-import Column from './Column.jsx';
+import UserContext from '../UserContext';
+import ColumnModal from './modals/ColumnModal';
+import CardModal from './modals/CardModal';
+import Column from './Column';
 
-function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
+function HomePage() {
+  // TODO: refactor state as necessary upon completion of other components - CS
+  const { username, isLoggedIn, setIsLoggedIn } = useContext(UserContext);
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
   const [boardData, setBoardData] = useState([]);
@@ -11,9 +15,10 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
 
   const navigate = useNavigate();
 
+  // TODO: refactor this to be dynamic - CS
   let renderColumns = [];
 
-  // this fetches data from the server and stores the data to the boardData state
+  // fetches data from the server and stores the data in the boardData state
   useEffect(() => {
     fetch('/api', {
       method: 'POST',
@@ -30,9 +35,7 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
       });
   }, [isLoggedIn]);
 
-  console.log('BOARD DATA', boardData);
-
-  // this creates the array of columns to render
+  // creates the array of columns to render
   if (boardData.length !== 0) {
     renderColumns = boardData[0].columns.map((column, index) => (
       <Column
@@ -52,6 +55,7 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
   };
 
   // modal logic
+  // TODO: refactor this with input from AK to implement CRUD functionality - CS & AK
   let overlay = null;
 
   if (showColumnModal || showCardModal) overlay = <div className="overlay" />;
@@ -60,14 +64,12 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
   return (
     <div className="homeCont">
       {overlay}
-
       <header className="homeHeader">
-        <h1> Home Page </h1>
-        <button className="logOut" onClick={routeToSignIn}>
+        <h1>Home Page</h1>
+        <button className="logOut" type="button" onClick={routeToSignIn}>
           LOG OUT
         </button>
       </header>
-
       <div className="boardDisplay">
         <div className="modal-box">
           {showColumnModal ? (
@@ -81,17 +83,17 @@ function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
               setBoardData={setBoardData}
             />
           ) : (
-            <></>
+            <div />
           )}
           {showCardModal ? (
             <CardModal showCardModal={showCardModal} setShowCardModal={setShowCardModal} />
           ) : (
-            <></>
+            <div />
           )}
         </div>
         <div className="column-container">{renderColumns}</div>
         <div>
-          <button className="addColumn" onClick={() => setShowColumnModal(true)}>
+          <button className="addColumn" type="button" onClick={() => setShowColumnModal(true)}>
             ADD COLUMN
           </button>
         </div>
