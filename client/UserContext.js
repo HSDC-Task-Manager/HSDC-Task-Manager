@@ -1,25 +1,12 @@
-/* tried useContext()
+import { createContext } from 'react';
 
-import React, { useContext, useState, createContext } from 'react';
+const UserContext = createContext({
+  username: '',
+  setUsername: () => {},
+  password: '',
+  setPassword: () => {},
+  isLoggedIn: false,
+  setIsLoggedIn: () => {},
+});
 
-export const UserContext = React.createContext();
-
-function UserProvider({ children }) {
-  const [ signUpToggle, setSignUpToggle ] = useState(true);
-  const [ user, setUser ] = useState("");
-  const [ password, setPassword ] = useState("")
-
-  return (
-    <UserContext.Provider value={[signUpToggle, setSignUpToggle]}>
-      <UserContext.Provider value={[ user, setUser ]}>
-        <UserContext.Provider value={[ password, setPassword ]}>
-        {children}
-         </UserContext.Provider>
-      </UserContext.Provider>
-    </UserContext.Provider>
-  )
-}
-
-export default UserProvider;
-
-*/
+export default UserContext;
