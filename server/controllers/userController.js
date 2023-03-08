@@ -1,6 +1,8 @@
 const User = require("../models/userModel");
 const path = require("path");
 
+const db = require("../models/pgModel");
+
 const userController = {};
 
 // Create new user
@@ -8,7 +10,16 @@ userController.createUser = (req, res, next) => {
   const { username, password } = req.body;
   console.log("in userController.createUser");
 
-  if (!username || !password) {
+userController.createUser = async (req, res, next) => {
+  try {
+    const { username, password, email } = req.body;
+    const userVals = [username, password, email];
+    const query = await db.query(
+      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id",
+      userVals
+    );
+    res.locals.id = query.rows[0].id;
+  } catch (error) {
     return next({
       log: "ERROR IN userController.createUser",
       message: {
@@ -16,69 +27,67 @@ userController.createUser = (req, res, next) => {
       },
     });
   }
-  User.create({ username, password })
-    .then((user) => {
-      console.log('user created')
-      res.locals.user = user;
-      console.log('current session is ', req.session);
-      // NOTE: Please work the following line into the SQL refactor promise resuolution of user creation to preserve session auth:
-      req.session.loggedIn = true;
-      console.log("session is now logged in? ", req.session.loggedIn);
-      next();
-    })
-    .catch((err) => {
-      if (err.code === 11000) {
-        console.log(err);
-        return next({
-          log: "ERROR 11000 in userController.verifyUser",
-          status: 400,
-          message: { err: "username already exists" },
-        });
-      }
-      return next({
-        log: "ERROR IN userController.verifyUser",
-        message: { err: "userController.verifyUser" + err },
-      });
-    });
 };
 
 // Verify user
-userController.verifyUser = (req, res, next) => {
-  const { username, password } = req.body;
+// OLD CODE
+// userController.verifyUser = (req, res, next) => {
+//   const { username, password } = req.body;
 
-  // ERROR HANDLING
-  if (!username || !password) {
-    console.log(
-      "Error in userController.verifyUser: username and password must be provided"
-    );
-    return next("username and password must be provided");
-  }
+//   // ERROR HANDLING
+//   if (!username || !password) {
+//     console.log(
+//       "Error in userController.verifyUser: username and password must be provided"
+//     );
+//     return next("username and password must be provided");
+//   }
 
-  // check if req.body.username matches a username in the database
+//   // check if req.body.username matches a username in the database
 
-  User.findOne({ username: username })
-    .exec()
-    .then((user) => {
-      if (!user || password !== user.password) {
-        console.log("no password match");
-        // return res.redirect("/signup");
-      }
-      // valid user
-      else {
-        console.log("res.locals: ", res.locals);
-        res.locals.user = user; // _id, username, password, boardIDs
-        // NOTE: Please work the following line into the SQL refactor promise resolution of user validation to preserve session auth:
-        req.session.loggedIn = true;
-        return next();
-      }
+//   User.findOne({ username: username })
+//     .exec()
+//     .then((user) => {
+//       if (!user || password !== user.password) {
+//         console.log("no password match");
+//         return res.redirect("/signup");
+//       }
+//       // valid user
+//       else {
+//         console.log("res.locals: ", res.locals);
+//         res.locals.user = user; // _id, username, password, boardIDs
+//         // NOTE: Please work the following line into the SQL refactor promise resolution of user validation to preserve session auth:
+//         req.session.loggedIn = true;
+//         return next();
+//       }
+//     })
+//     .catch((err) => {
+//       return next({
+//         log: "userController.verifyUser",
+//         message: { err: "userController.verifyUser" + err },
+//       });
+//     });
+// };
+
+//TODO test parameterized query to ensure it works. - NN
+// SELECT EXITS query will return a boolean value
+userController.verifyUser = async (req, res, next) {
+  try {
+    const { username, password } = req.body;
+    const userVals = [username, password];
+    const query = await db.query(
+      "SELECT id FROM users WHERE user_name=$1 AND password=$2;",
+      userVals
+    )
+    res.locals.verifiedUser = query !== [];
+    res.locals.id = query.rows[0].id;
+    return next();
+  } catch (error) {
+    return next({
+      log: "userController.verifyUser",
+      message: {err: "userController.verifyUser" + error}
     })
-    .catch((err) => {
-      return next({
-        log: "ERROR IN userController.verifyUser",
-        message: { err: "userController.verifyUser", err },
-      });
-    });
-};
+  }
+}
 
 /* * * *
  * TODO - can add any of the following we wish to have stored in the session as well:
@@ -88,22 +97,37 @@ userController.verifyUser = (req, res, next) => {
  * source for these variables should be from request body destructuring.
  * * * */
 
-userController.getBoardIds = (req, res, next) => {
-  console.log("running userController.getBoardIds. req.body: ", req.body);
-  let { username } = req.body;
+// Old mongo query
+// userController.getBoardIds = (req, res, next) => {
+//   console.log("running userController.getBoardIds. req.body: ", req.body);
+//   let { username } = req.body;
 
-  User.findOne({ username })
-    .exec()
-    .then((response) => {
-      res.locals.boardIds = response.board_ids;
-      return next();
+//   User.findOne({ username })
+//     .exec()
+//     .then((response) => {
+//       res.locals.boardIds = response.board_ids;
+//       return next();
+//     })
+//     .catch((err) => {
+//       return next({
+//         log: "error in userController.getBoardIds",
+//         message: { err: "userController.getBoardIds" + err },
+//       });
+//     });
+// };
+
+userController.getBoardIds = async (req, res, next) => {
+  try {
+    const { userID } = req.body;
+    const query = await db.query('SELECT boards.id, boards.name FROM workspace INNER JOIN users ON workspace.user_id = users.id INNER JOIN boards ON workspace.board_id = boards.id WHERE workspace.user_id = $1;', userID)
+    //note, only index 0 while we only have 1 board
+    res.locals.boardID = query.rows[0].id;
+  } catch(error) {
+    return next({
+      log: "error in userController.getBoardIds",
+      message: { err: "userController.getBoardIds" + error },
     })
-    .catch((err) => {
-      return next({
-        log: "error in userController.getBoardIds",
-        message: { err: "userController.getBoardIds" + err },
-      });
-    });
-};
+  }
+}
 
 module.exports = userController;

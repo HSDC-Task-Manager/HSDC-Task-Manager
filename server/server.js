@@ -6,6 +6,7 @@ const userController = require("./controllers/userController");
 const sessionController = require("./controllers/sessionController");
 const cookieController = require("./controllers/cookieController");
 const boardController = require("./controllers/boardController");
+conse cardController = require("./controllers/cardController")
 const session = require("express-session");
 const columnRouter = require("./routers/columnRouter");
 const cardRouter = require("./routers/cardRouter");
@@ -55,6 +56,8 @@ app.use("/build", express.static(path.resolve(__dirname, "../build")));
 //     res.status(200).json(res.locals.boards);
 //   }
 // );
+
+
 
 //CRUD ROUTERS
 app.use("/column", columnRouter);
