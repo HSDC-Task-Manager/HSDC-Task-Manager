@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import HomePage from './HomePage.jsx';
-// import { Outlet, Link } from "react-router-dom";
 
-function LoginPage() {
+function LoginPage({
+  username, setUsername, password, setPassword, isLoggedIn, setIsLoggedIn,
+}) {
   // DECLARE STATE
-  const [user, setUser] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [loginError, setLoginError] = useState(false);
-  const loginTest = useRef(false);
 
   const navigate = useNavigate();
 
@@ -17,36 +14,29 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const loginData = { username: user, password };
+      const loginData = { username, password };
       const result = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),
       });
-      if (result.ok) {
-        setIsLoggedIn(true);
-      } else {
-        setLoginError(true);
-      }
+      console.log('RESULT FROM LOGIN REQUEST: ', result);
+      // TODO: fix this when the backend is ready - CS & NN
+      setIsLoggedIn(true);
     } catch (error) {
       console.log('incorrect username or password', error);
     }
   };
 
+  // ROUTES
+  // send user to homepage if successfully logged in
   useEffect(() => {
     if (isLoggedIn) {
       navigate('/homepage');
     }
   }, [isLoggedIn]);
 
-  useEffect(() => {
-    if (loginError) {
-      alert('Incorrect username or password');
-    }
-  }, [loginError]);
-
-  // ROUTES
-  // ROUTE TO SIGN UP PAGE IF BUTTON CLICKED
+  // send user to signup if signup button is clicked
   const routeToSignUp = (e) => {
     e.preventDefault();
     navigate('/signup');
@@ -66,7 +56,7 @@ function LoginPage() {
               className="user-input"
               type="text"
               required
-              onChange={(e) => setUser(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="formLine">
@@ -93,39 +83,3 @@ function LoginPage() {
 }
 
 export default LoginPage;
-
-/* tried useContext()
-
-import UserProvider from '../UserContext';
-import UserContext from '../UserContext';
-
-const user = useContext(UserProvider)
-const password = useContext(UserProvider)
-const signUpToggle = useContext(UserProvider)
-const setSignUpToggle = useContext(UserProvider)
-const [signUpToggle, setSignUpToggle] = useContext(UserContext)
-
-function toggle () {
-  console.log(setSignUpToggle)
-  console.log('toggle: ', typeof setSignUpToggle)
-  setSignUpToggle(false)
-  */
-
-// .then((res) => {
-//   if (res.status === 404) {
-//     setIsLoggedIn(false);
-//     setLoginError(true);
-//   } else {
-//     setIsLoggedIn(true);
-//     setLoginError(false);
-//   }
-// })
-// .then(() => {
-//   console.log('isLoggedIn: ', isLoggedIn);
-//   if (isLoggedIn) {
-//     navigate('/homepage');
-//   }
-// })
-// .catch((error) => {
-//   console.log('incorrect username or password', error);
-// });

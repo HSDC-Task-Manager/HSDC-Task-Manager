@@ -1,43 +1,24 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ColumnModal, CardModal } from './Modals.jsx';
 import Column from './Column.jsx';
 
-function HomePage({ user, isLoggedIn, setLogin }) {
-  // state to render a column creation modal
+function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
   const [showColumnModal, setShowColumnModal] = useState(false);
-  // state to render a card creation modal
   const [showCardModal, setShowCardModal] = useState(false);
-  // const [columnsState, setColumns] = useState(null);
   const [boardData, setBoardData] = useState([]);
   const [currBoardID, setCurrBoardID] = useState('');
 
-  // render columns and cards within
-  // [
-  //   {
-  //       "_id": "640635f9e846af21bdd5652e",
-  //       "boardName": "testBoard",
-  //       "columns": [
-  //           {
-  //               "_id": "64065a6f664404268f5fc975",
-  //               "columnName": "col1",
-  //               "cards": [
-  //                   {
-  //                       "_id": "64065a6f664404268f5fc976",
-  //                       "cardText": "hello, I'm a card!"
-  //                   }
-  //               ]
-  //           }
-  //       ]
-  //   }
-  // ]
-  // This is real code do not delete:
+  const navigate = useNavigate();
+
   let renderColumns = [];
 
+  // this fetches data from the server and stores the data to the boardData state
   useEffect(() => {
     fetch('/api', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: user }),
+      body: JSON.stringify({ username }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -51,6 +32,7 @@ function HomePage({ user, isLoggedIn, setLogin }) {
 
   console.log('BOARD DATA', boardData);
 
+  // this creates the array of columns to render
   if (boardData.length !== 0) {
     renderColumns = boardData[0].columns.map((column, index) => (
       <Column
@@ -61,6 +43,15 @@ function HomePage({ user, isLoggedIn, setLogin }) {
       />
     ));
   }
+  // routes back to the sign in page when clicking log out
+  // TODO: add functionality on logout to end the user session - DN?
+  const routeToSignIn = (e) => {
+    e.preventDefault();
+    setIsLoggedIn(false);
+    navigate('/');
+  };
+
+  // modal logic
   let overlay = null;
 
   if (showColumnModal || showCardModal) overlay = <div className="overlay" />;
@@ -72,16 +63,13 @@ function HomePage({ user, isLoggedIn, setLogin }) {
 
       <header className="homeHeader">
         <h1> Home Page </h1>
-        <button className="logOut" onClick={() => setLogin(false)}>
+        <button className="logOut" onClick={routeToSignIn}>
           LOG OUT
         </button>
       </header>
 
       <div className="boardDisplay">
         <div className="modal-box">
-          {/* when showModal is set to true a column modal will render */}
-          {/* having issues with page re-rendering when state is updated. modal does not stay up */}
-          {/* {showColumnModal && <ColumnModal showColumnModal={showColumnModal} setShowColumnModal={setShowColumnModal} />} */}
           {showColumnModal ? (
             <ColumnModal
               showColumnModal={showColumnModal}
