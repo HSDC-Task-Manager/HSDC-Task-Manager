@@ -72,7 +72,7 @@ app.post(
   "/signup",
   userController.createUser,
   sessionController.startSession,
-  cookieController.setSSIDCookie,
+  // cookieController.setSSIDCookie,
   (req, res) => {
     // what should happen here on successful log in?
     console.log("completing post request to '/signup");
