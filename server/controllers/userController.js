@@ -5,39 +5,41 @@ const userController = {};
 
 // Create new user
 userController.createUser = (req, res, next) => {
-
-  const {username, password} = req.body;
+  const { username, password } = req.body;
 
   if (!username || !password) {
     return next({
       log: "userController.createUser",
-      message: { err: "userController.createUser: username and password must be provided"},
+      message: {
+        err: "userController.createUser: username and password must be provided",
+      },
     });
   }
-  User.create({username, password})
+  User.create({ username, password })
     .then((user) => {
-        res.locals.user = user;
-        next();
-      })
-      .catch((err) => {
-        if (err.code === 11000) {
-          console.log(err)
-          return next ({
-            log: "userController.verifyUser",
-            status: 400,
-            message: { err: 'username already exists' },
-          })
-        }
+      res.locals.user = user;
+      // NOTE: Please work the following line into the SQL refactor promise resuolution of user creation to preserve session auth:
+      req.session.loggedIn = true;
+      next();
+    })
+    .catch((err) => {
+      if (err.code === 11000) {
+        console.log(err);
         return next({
           log: "userController.verifyUser",
-          message: { err: "userController.verifyUser" + err },
+          status: 400,
+          message: { err: "username already exists" },
         });
+      }
+      return next({
+        log: "userController.verifyUser",
+        message: { err: "userController.verifyUser" + err },
       });
-  }
+    });
+};
 
 // Verify user
 userController.verifyUser = (req, res, next) => {
-
   const { username, password } = req.body;
 
   // ERROR HANDLING
@@ -60,7 +62,9 @@ userController.verifyUser = (req, res, next) => {
       // valid user
       else {
         console.log("res.locals: ", res.locals);
-        res.locals.user = user;  // _id, username, password, boardIDs
+        res.locals.user = user; // _id, username, password, boardIDs
+        // NOTE: Please work the following line into the SQL refactor promise resolution of user validation to preserve session auth:
+        req.session.loggedIn = true;
         return next();
       }
     })
@@ -72,13 +76,22 @@ userController.verifyUser = (req, res, next) => {
     });
 };
 
-userController.getBoardIds= (req, res, next) => {
-  console.log('running userController.getBoardIds. req.body: ', req.body)
+/* * * *
+ * TODO - can add any of the following we wish to have stored in the session as well:
+ * * req.session.email = email;
+ * * req.session.username = username;
+ * * req.session.userID = id;
+ * source for these variables should be from request body destructuring.
+ * * * */
+
+userController.getBoardIds = (req, res, next) => {
+  console.log("running userController.getBoardIds. req.body: ", req.body);
   let { username } = req.body;
 
-  User.findOne({username}).exec()
-    .then(response => {
-      res.locals.boardIds = response.board_ids
+  User.findOne({ username })
+    .exec()
+    .then((response) => {
+      res.locals.boardIds = response.board_ids;
       return next();
     })
     .catch((err) => {
@@ -87,7 +100,6 @@ userController.getBoardIds= (req, res, next) => {
         message: { err: "userController.getBoardIds" + err },
       });
     });
-
 };
 
 module.exports = userController;
