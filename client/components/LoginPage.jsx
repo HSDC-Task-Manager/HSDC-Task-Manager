@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import UserContext from '../UserContext';
 
 function LoginPage() {
+  // useContext is used to access the contextValue from App.jsx
   const {
     username, setUsername, password, setPassword, isLoggedIn, setIsLoggedIn,
   } = useContext(UserContext);

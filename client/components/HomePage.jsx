@@ -6,6 +6,7 @@ import CardModal from './modals/CardModal';
 import Column from './Column';
 
 function HomePage() {
+  // TODO: refactor state as necessary upon completion of other components - CS
   const { username, isLoggedIn, setIsLoggedIn } = useContext(UserContext);
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
@@ -14,6 +15,7 @@ function HomePage() {
 
   const navigate = useNavigate();
 
+  // TODO: refactor this to be dynamic - CS
   let renderColumns = [];
 
   // fetches data from the server and stores the data in the boardData state
@@ -32,8 +34,6 @@ function HomePage() {
         console.log('Error fetching boardData in APP.jsx:', error);
       });
   }, [isLoggedIn]);
-
-  console.log('BOARD DATA', boardData);
 
   // creates the array of columns to render
   if (boardData.length !== 0) {
@@ -55,6 +55,7 @@ function HomePage() {
   };
 
   // modal logic
+  // TODO: refactor this with input from AK to implement CRUD functionality - CS & AK
   let overlay = null;
 
   if (showColumnModal || showCardModal) overlay = <div className="overlay" />;
@@ -64,7 +65,7 @@ function HomePage() {
     <div className="homeCont">
       {overlay}
       <header className="homeHeader">
-        <h1> Home Page </h1>
+        <h1>Home Page</h1>
         <button className="logOut" type="button" onClick={routeToSignIn}>
           LOG OUT
         </button>
