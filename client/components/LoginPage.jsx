@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import UserContext from '../UserContext';
 
-function LoginPage({
-  username, setUsername, password, setPassword, isLoggedIn, setIsLoggedIn,
-}) {
-  // DECLARE STATE
-
-  const [loginError, setLoginError] = useState(false);
+function LoginPage() {
+  // useContext is used to access the contextValue from App.jsx
+  const {
+    username, setUsername, password, setPassword, isLoggedIn, setIsLoggedIn,
+  } = useContext(UserContext);
 
   const navigate = useNavigate();
 
-  // HANDLE LOGIN
+  // makes a POST request to the backend to begin auth process
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -28,21 +28,19 @@ function LoginPage({
     }
   };
 
-  // ROUTES
-  // send user to homepage if successfully logged in
+  // sends user to homepage if successfully logged in
   useEffect(() => {
     if (isLoggedIn) {
       navigate('/homepage');
     }
   }, [isLoggedIn]);
 
-  // send user to signup if signup button is clicked
+  // sends user to signup if signup button is clicked
   const routeToSignUp = (e) => {
     e.preventDefault();
     navigate('/signup');
   };
 
-  // RENDER
   return (
     <div className="loginCont">
       <div className="user-login-box">
@@ -51,31 +49,38 @@ function LoginPage({
           <div className="formLine">
             <label className="login-text" htmlFor="username">
               Username/Email
+              <input
+                id="username"
+                className="user-input"
+                type="text"
+                required
+                autoComplete="username"
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </label>
-            <input
-              className="user-input"
-              type="text"
-              required
-              onChange={(e) => setUsername(e.target.value)}
-            />
           </div>
           <div className="formLine">
             <label className="login-text" htmlFor="password">
               Password
+              <input
+                className="user-input"
+                type="password"
+                required
+                autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </label>
-            <input
-              className="user-input"
-              type="password"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
           </div>
-          <button className="submit">Login</button>
+          <button type="submit" className="submit">
+            Login
+          </button>
         </form>
         <div className="login-footer">
-          Don't have an Account?
+          Don&apos;t have an Account?
           {' '}
-          <button onClick={routeToSignUp}>Sign up here!</button>
+          <button type="button" onClick={routeToSignUp}>
+            Sign up here!
+          </button>
         </div>
       </div>
     </div>
