@@ -6,6 +6,7 @@ const userController = require("./controllers/userController");
 const sessionController = require("./controllers/sessionController");
 const cookieController = require("./controllers/cookieController");
 const boardController = require("./controllers/boardController");
+conse cardController = require("./controllers/cardController")
 const session = require("express-session");
 
 // setup app and port
@@ -47,7 +48,7 @@ app.post(
   "/api",
   sessionController.isLoggedIn,
   userController.getBoardIds,
-  boardController.getBoards,
+  boardController.getBoard,
   (req, res) => {
     res.status(200).json(res.locals.boards);
   }
@@ -67,6 +68,8 @@ app.post(
 //     // res.redirect("/");
 //   }
 // );
+
+app.get();
 
 app.post(
   "/signup",
