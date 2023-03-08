@@ -1,11 +1,16 @@
-import React, { useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router';
-import UserContext from '../UserContext';
+import React, { useEffect, useContext } from "react";
+import { useNavigate } from "react-router";
+import UserContext from "../UserContext";
 
 function SignUpPage() {
   // useContext is used to access the contextValue from App.jsx
   const {
-    username, setUsername, password, setPassword, isLoggedIn, setIsLoggedIn,
+    username,
+    setUsername,
+    password,
+    setPassword,
+    isLoggedIn,
+    setIsLoggedIn,
   } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -13,31 +18,37 @@ function SignUpPage() {
   // fetch request to signup user
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('isLoggedIn is ', isLoggedIn);
     const loginData = { username, password };
-    fetch('/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    console.log("USERNAME: ", username);
+    console.log("PASSWORD: ", password);
+    fetch("/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData),
     })
-      .then(() => {
-        setIsLoggedIn(true);
+      .then((res) => {
+        console.log('res.status in signup page: ', res.status);
+        if (res.status === 200) {
+          setIsLoggedIn(true);
+        }
       })
       .catch((error) => {
-        console.log('unable to signup user', error);
+        console.log("unable to signup user", error);
       });
   };
 
   // sends user to homepage if successfully logged in
   useEffect(() => {
     if (isLoggedIn) {
-      navigate('/homepage');
+      navigate("/homepage");
     }
   }, [isLoggedIn]);
 
   // sends user to login page if Sign in here! button is clicked
   const routeToSignIn = (e) => {
     e.preventDefault();
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -74,8 +85,7 @@ function SignUpPage() {
           </button>
         </form>
         <div className="login-footer">
-          Already have an account?
-          {' '}
+          Already have an account?{" "}
           <button type="button" onClick={routeToSignIn}>
             Sign in here!
           </button>

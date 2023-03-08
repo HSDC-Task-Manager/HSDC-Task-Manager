@@ -6,40 +6,9 @@ const db = require("../models/pgModel");
 const userController = {};
 
 // Create new user
-// Old mongo query for createUser
-// userController.createUser = (req, res, next) => {
-//   const { username, password } = req.body;
-
-//   if (!username || !password) {
-//     return next({
-//       log: "userController.createUser",
-//       message: {
-//         err: "userController.createUser: username and password must be provided",
-//       },
-//     });
-//   }
-//   User.create({ username, password })
-//     .then((user) => {
-//       res.locals.user = user;
-//       // NOTE: Please work the following line into the SQL refactor promise resuolution of user creation to preserve session auth:
-//       req.session.loggedIn = true;
-//       next();
-//     })
-//     .catch((err) => {
-//       if (err.code === 11000) {
-//         console.log(err);
-//         return next({
-//           log: "userController.verifyUser",
-//           status: 400,
-//           message: { err: "username already exists" },
-//         });
-//       }
-//       return next({
-//         log: "userController.verifyUser",
-//         message: { err: "userController.verifyUser" + err },
-//       });
-//     });
-// };
+userController.createUser = (req, res, next) => {
+  const { username, password } = req.body;
+  console.log("in userController.createUser");
 
 userController.createUser = async (req, res, next) => {
   try {
@@ -52,8 +21,10 @@ userController.createUser = async (req, res, next) => {
     res.locals.id = query.rows[0].id;
   } catch (error) {
     return next({
-      log: "userController.createUser",
-      message: { err: "userController.createUser" + error },
+      log: "ERROR IN userController.createUser",
+      message: {
+        err: "userController.createUser: username and password must be provided",
+      },
     });
   }
 };
