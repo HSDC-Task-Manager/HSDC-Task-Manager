@@ -1,110 +1,103 @@
-import React, { Component } from "react";
-import { useState, useEffect } from "react";
-import  { ColumnModal, CardModal } from './Modals.jsx';
-import Column from './Column.jsx'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ColumnModal, CardModal } from './Modals.jsx';
+import Column from './Column.jsx';
 
-function HomePage({user, isLoggedIn, setLogin}) {
-  // state to render a column creation modal
-  const [ showColumnModal, setShowColumnModal ] = useState(false)
-  // state to render a card creation modal
-  const [ showCardModal, setShowCardModal ] = useState(false)
-  // const [columnsState, setColumns] = useState(null);
-  const [ boardData, setBoardData ] = useState([]);
-  const [ currBoardID, setCurrBoardID] = useState('');
+function HomePage({ username, isLoggedIn, setIsLoggedIn }) {
+  const [showColumnModal, setShowColumnModal] = useState(false);
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [boardData, setBoardData] = useState([]);
+  const [currBoardID, setCurrBoardID] = useState('');
 
-  //render columns and cards within 
-  // [
-  //   {
-  //       "_id": "640635f9e846af21bdd5652e",
-  //       "boardName": "testBoard",
-  //       "columns": [
-  //           {
-  //               "_id": "64065a6f664404268f5fc975",
-  //               "columnName": "col1",
-  //               "cards": [
-  //                   {
-  //                       "_id": "64065a6f664404268f5fc976",
-  //                       "cardText": "hello, I'm a card!"
-  //                   }
-  //               ]
-  //           }
-  //       ]
-  //   }
-  // ]
-    //This is real code do not delete:
-    let renderColumns = [];
+  const navigate = useNavigate();
 
-    useEffect(() => {
+  let renderColumns = [];
 
-      fetch('/api', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({username: user})
-      }).then((res) => res.json())
+  // this fetches data from the server and stores the data to the boardData state
+  useEffect(() => {
+    fetch('/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
+    })
+      .then((res) => res.json())
       .then((data) => {
         setBoardData(data);
-        setCurrBoardID(data[0]._id)
+        setCurrBoardID(data[0]._id);
       })
       .catch((error) => {
-        console.log('Error fetching boardData in APP.jsx:', error)
-      })
-    },[isLoggedIn])
+        console.log('Error fetching boardData in APP.jsx:', error);
+      });
+  }, [isLoggedIn]);
 
-    console.log('BOARD DATA', boardData)
+  console.log('BOARD DATA', boardData);
 
+  // this creates the array of columns to render
+  if (boardData.length !== 0) {
+    renderColumns = boardData[0].columns.map((column, index) => (
+      <Column
+        key={index}
+        columnName={column.columnName}
+        cards={column.cards}
+        setShowCardModal={setShowCardModal}
+      />
+    ));
+  }
+  // routes back to the sign in page when clicking log out
+  // TODO: add functionality on logout to end the user session - DN?
+  const routeToSignIn = (e) => {
+    e.preventDefault();
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
-    if (boardData.length !== 0) {
-      renderColumns = boardData[0].columns.map((column, index) => {
-          return (<Column key={index} columnName={column.columnName} cards={column.cards} setShowCardModal={setShowCardModal}/>)
-        })
-    }
-    let overlay = null;
+  // modal logic
+  let overlay = null;
 
-    if (showColumnModal || showCardModal) overlay = <div className="overlay"></div>
-    else overlay = null;
+  if (showColumnModal || showCardModal) overlay = <div className="overlay" />;
+  else overlay = null;
 
-    return (
-      <div className='homeCont'>
+  return (
+    <div className="homeCont">
+      {overlay}
 
-        {overlay}
-        
-        <header className='homeHeader'>
-          <h1> Home Page </h1>
-          <button className="logOut" onClick={() => (setLogin(false))}>LOG OUT</button>
+      <header className="homeHeader">
+        <h1> Home Page </h1>
+        <button className="logOut" onClick={routeToSignIn}>
+          LOG OUT
+        </button>
+      </header>
 
-        </header>
-      
-        <div className='boardDisplay'>
-          <div className="modal-box">
-            {/* when showModal is set to true a column modal will render */}
-            {/* having issues with page re-rendering when state is updated. modal does not stay up */}
-            {/* {showColumnModal && <ColumnModal showColumnModal={showColumnModal} setShowColumnModal={setShowColumnModal} />} */}
-            {showColumnModal ? (<ColumnModal 
-              showColumnModal={showColumnModal} 
-              setShowColumnModal={setShowColumnModal} 
-              showCardModal={showCardModal} 
+      <div className="boardDisplay">
+        <div className="modal-box">
+          {showColumnModal ? (
+            <ColumnModal
+              showColumnModal={showColumnModal}
+              setShowColumnModal={setShowColumnModal}
+              showCardModal={showCardModal}
               setShowCardModal={setShowCardModal}
               boardData={boardData}
               currBoardID={currBoardID}
-              setBoardData={setBoardData} />) 
-              : (<></>)
-            }
-            {showCardModal ? (<CardModal 
-              showCardModal={showCardModal} 
-              setShowCardModal={setShowCardModal} />) 
-              : (<></>)
-            }
-          </div>
-          <div className="column-container">
-            {renderColumns}
-          </div>
-          <div>
-            <button className="addColumn" onClick={() => setShowColumnModal(true)}>ADD COLUMN</button>
-          </div>
+              setBoardData={setBoardData}
+            />
+          ) : (
+            <></>
+          )}
+          {showCardModal ? (
+            <CardModal showCardModal={showCardModal} setShowCardModal={setShowCardModal} />
+          ) : (
+            <></>
+          )}
+        </div>
+        <div className="column-container">{renderColumns}</div>
+        <div>
+          <button className="addColumn" onClick={() => setShowColumnModal(true)}>
+            ADD COLUMN
+          </button>
         </div>
       </div>
+    </div>
   );
-
 }
 
 export default HomePage;
