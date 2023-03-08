@@ -6,10 +6,11 @@ const userController = {};
 // Create new user
 userController.createUser = (req, res, next) => {
   const { username, password } = req.body;
+  console.log("in userController.createUser");
 
   if (!username || !password) {
     return next({
-      log: "userController.createUser",
+      log: "ERROR IN userController.createUser",
       message: {
         err: "userController.createUser: username and password must be provided",
       },
@@ -17,22 +18,25 @@ userController.createUser = (req, res, next) => {
   }
   User.create({ username, password })
     .then((user) => {
+      console.log('user created')
       res.locals.user = user;
+      console.log('current session is ', req.session);
       // NOTE: Please work the following line into the SQL refactor promise resuolution of user creation to preserve session auth:
       req.session.loggedIn = true;
+      console.log("session is now logged in? ", req.session.loggedIn);
       next();
     })
     .catch((err) => {
       if (err.code === 11000) {
         console.log(err);
         return next({
-          log: "userController.verifyUser",
+          log: "ERROR 11000 in userController.verifyUser",
           status: 400,
           message: { err: "username already exists" },
         });
       }
       return next({
-        log: "userController.verifyUser",
+        log: "ERROR IN userController.verifyUser",
         message: { err: "userController.verifyUser" + err },
       });
     });
@@ -57,7 +61,7 @@ userController.verifyUser = (req, res, next) => {
     .then((user) => {
       if (!user || password !== user.password) {
         console.log("no password match");
-        return res.redirect("/signup");
+        // return res.redirect("/signup");
       }
       // valid user
       else {
@@ -70,8 +74,8 @@ userController.verifyUser = (req, res, next) => {
     })
     .catch((err) => {
       return next({
-        log: "userController.verifyUser",
-        message: { err: "userController.verifyUser" + err },
+        log: "ERROR IN userController.verifyUser",
+        message: { err: "userController.verifyUser", err },
       });
     });
 };
