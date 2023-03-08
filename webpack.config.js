@@ -39,4 +39,7 @@ module.exports = {
       '/signup': 'http://localhost:3000',
     },
   },
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.html'],
+  },
 };
