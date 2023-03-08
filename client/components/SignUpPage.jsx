@@ -1,28 +1,27 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
-function SignUpPage() {
+function SignUpPage({
+  username, setUsername, password, setPassword, isLoggedIn, setIsLoggedIn,
+}) {
   // DECLARE STATE
-  const [user, setUser] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [signUpError, setSignUpError] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const loginData = { username: user, password };
+    const loginData = { username, password };
     fetch('/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginData),
     })
-      .then((res) => {
+      .then(() => {
         setIsLoggedIn(true);
-        if (isLoggedIn) {
-          navigate('/');
-        }
+        // if (isLoggedIn) {
+        //   navigate('/homepage');
+        // }
       })
       .catch((error) => {
         console.log('unable to signup user', error);
@@ -30,10 +29,11 @@ function SignUpPage() {
   };
 
   // ROUTES
-  const routeToHomePage = (e) => {
-    e.preventDefault();
-    navigate('/homepage');
-  };
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/homepage');
+    }
+  }, [isLoggedIn]);
 
   const routeToSignIn = (e) => {
     e.preventDefault();
@@ -54,7 +54,7 @@ function SignUpPage() {
               className="user-input"
               type="text"
               required
-              onChange={(e) => setUser(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="formLine">
@@ -81,21 +81,3 @@ function SignUpPage() {
 }
 
 export default SignUpPage;
-
-/* tried useContext ...
-
-import UserProvider from '../UserContext';
-import UserContext from '../UserContext';
-STATE HERE IF NEEDED
-const user = useContext(UserProvider)
-const password = useContext(UserProvider)
-// const signUpToggle = useContext(UserProvider)
-// const setSignUpToggle = useContext(UserProvider)
-const [signUpToggle, setSignUpToggle] = useContext(UserContext)
-
-function toggle () {
-  console.log('toggle: ', typeof setSignUpToggle)
-  console.log(setSignUpToggle)
-  return setSignUpToggle(false)
-
-*/
