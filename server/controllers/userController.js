@@ -19,7 +19,7 @@ userController.createUser = async (req, res, next) => {
     return next({
       log: "ERROR IN userController.createUser",
       message: {
-        err: "userController.createUser: username and password must be provided",
+        err: "userController.createUser: ", err,
       },
     });
   }
