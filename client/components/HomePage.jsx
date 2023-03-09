@@ -66,34 +66,45 @@ function HomePage() {
   };
 
   const handleCreateColumn = async (e) => {
-    e.preventDefault();
-    console.log("Column being created");
-    // send column name and boardID in post req
-    const columnIdRes = await fetch("/column", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ boardId, newColumnName }),
-    });
-    // handle returned columnID from server
-    const columnId = await columnIdRes.json();
-    // set new column as variable
-    const newCol = (
-      <Column
-        key={columnId}
-        columnId={columnId}
-        columnName={newColumnName}
-        boardId={boardId}
-        // double check the cards drilling
-        cards={[]}
-      />
-    );
-    // update column list in state with new column
-    setColumns((prevColumns) => {
-      return [...prevColumns, newCol];
-    });
+    try {
+      e.preventDefault();
+
+      console.log("Column being created");
+      // send column name and boardID in post req
+      const columnIdRes = await fetch("/column", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ boardId, newColumnName }),
+      });
+      // handle returned columnID from server
+      const columnId = await columnIdRes.json();
+      // set new column as variable
+      const newCol = (
+        <Column
+          key={columnId}
+          columnId={columnId}
+          columnName={newColumnName}
+          boardId={boardId}
+          // double check the cards drilling
+          cards={[]}
+        />
+      );
+      // update column list in state with new column
+      setColumns((prevColumns) => {
+        return [...prevColumns, newCol];
+      });
+      setNewColumnName("");
+    } catch (err) {
+      console.log("ERROR in handleCreateColumn", err);
+    }
   };
 
   const handleNameChange = (e) => setNewColumnName(e.target.value);
+
+  const handleCancelClick = (e) => {
+    setShowColumnCreatorModal(false);
+    setNewColumnName('');
+  }
 
   return (
     <div className="homeCont">
@@ -120,6 +131,12 @@ function HomePage() {
             </label>
             <button type="submit">Submit</button>
           </form>
+          <button
+            type="button"
+            onClick={handleCancelClick}
+          >
+            Cancel
+          </button>
         </div>
       )}
       <div className="boardDisplay">{columns}</div>

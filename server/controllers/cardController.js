@@ -7,8 +7,8 @@ cardController.getCards = (req, res, next) => {};
 
 cardController.addCard = async (req, res, next) => {
   try {
-    const { name, body, columnID } = req.body;
-    const cardVals = [name, body, columnID];
+    const { newCardName, newCardBody, columnId } = req.body;
+    const cardVals = [newCardName, newCardBody, columnId];
     const query = await db.query(
       "INSERT INTO cards (name, text_body, list_id) VALUES ($1, $2, $3) RETURNING id;",
       cardVals
