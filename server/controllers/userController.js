@@ -8,10 +8,10 @@ const userController = {};
 // Create new user
 userController.createUser = async (req, res, next) => {
   try {
-    const { username, password, email } = req.body;
-    const userVals = [username, password, email];
+    const { username, password } = req.body;
+    const userVals = [username, password];
     const query = await db.query(
-      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id;",
+      "INSERT INTO users (user_name, password) VALUES ($1, $2) RETURNING id;",
       userVals
     );
     res.locals.id = query.rows[0].id;
