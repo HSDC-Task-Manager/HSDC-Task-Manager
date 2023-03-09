@@ -24,9 +24,10 @@ cardController.addCard = async (req, res, next) => {
 
 cardController.editCard = async (req, res, next) => {
   try {
-    const { id, name, body } = req.body;
-    const cardVals = [id, name, body];
+    const { id, name, body, listName } = req.body;
+    const cardVals = [id, name, body, listName];
     const query = await db.query(
+      // TODO - update query for changing cards from one list to another by updating list_id via join/subquery
       "UPDATE cards SET (name, body) VALUES ($2, $3) WHERE cards.id = $1;",
       cardVals
     );
