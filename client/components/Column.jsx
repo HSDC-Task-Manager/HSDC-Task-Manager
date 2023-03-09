@@ -84,13 +84,33 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
     }
   };
   const handleCancelClick = (e) => {
-    setShowCardCreatorModal(false)
-    setNewCardName('');
-    setNewCardBody('');
-  }
-  
+    setShowCardCreatorModal(false);
+    setNewCardName("");
+    setNewCardBody("");
+  };
+
   const handleCardNameChange = (e) => setNewCardName(e.target.value);
   const handleCardBodyChange = (e) => setNewCardBody(e.target.value);
+
+  const handleDeleteColumn = async (e) => {
+    e.preventDefault();
+    const response = await fetch(`/column/${columnId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    setColumns((prevColumnData) => {
+      return prevColumnData.filter((col) => {
+        console.log("Column in handleDeleteColumn", col);
+        return col.props.columnId !== columnId;
+      });
+    });
+  };
+
+  const handleEditColumn = (e) => {
+    e.preventDefault();
+    console.log("EDIT");
+  };
 
   return (
     <div className="columnCont">
@@ -117,7 +137,9 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
             </label>
             <button type="submit">Submit</button>
           </form>
-          <button type="button" onClick={handleCancelClick}>Cancel</button>
+          <button type="button" onClick={handleCancelClick}>
+            Cancel
+          </button>
         </div>
       )}
       {!showCardCreatorModal && (
@@ -129,11 +151,26 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
           Add Card
         </button>
       )}
+      <button
+        className="delete-column-button"
+        type="button"
+        onClick={handleDeleteColumn}
+      >
+        Delete Column
+      </button>
+      <button
+        className="edit-column-button"
+        type="button"
+        onClick={handleEditColumn}
+      >
+        Edit Column Name
+      </button>
     </div>
   );
 }
 
 export default Column;
+
 //{
 /* <AddCardBtn
   allCardsInColumn={allCardsInColumn}

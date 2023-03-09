@@ -41,6 +41,7 @@ function HomePage() {
           columnName={columnName}
           boardId={boardId}
           cards={cardsFromColumn}
+          setColumns={setColumns}
         />
       );
     });
@@ -87,6 +88,7 @@ function HomePage() {
           boardId={boardId}
           // double check the cards drilling
           cards={[]}
+          setColumns={setColumns}
         />
       );
       // update column list in state with new column
@@ -103,8 +105,8 @@ function HomePage() {
 
   const handleCancelClick = (e) => {
     setShowColumnCreatorModal(false);
-    setNewColumnName('');
-  }
+    setNewColumnName("");
+  };
 
   return (
     <div className="homeCont">
@@ -131,10 +133,7 @@ function HomePage() {
             </label>
             <button type="submit">Submit</button>
           </form>
-          <button
-            type="button"
-            onClick={handleCancelClick}
-          >
+          <button type="button" onClick={handleCancelClick}>
             Cancel
           </button>
         </div>
