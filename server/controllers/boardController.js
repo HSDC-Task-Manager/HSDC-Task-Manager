@@ -4,8 +4,10 @@ const boardController = {};
 
 boardController.getBoard = async (req, res, next) => {
   try {
-    // jsonb_agg(json_build_object(‘name’, nameval, ‘columns’, jsonb_agg(json_build_object(…..))
-    const { boardID } = res.locals.boardID;
+    /* TODO - Once workspaces is fully integrated to allow 
+       selecting of different boards,
+     change res.locals to req.body; */
+    const { boardID } = res.locals;
     const qBody = `SELECT row_to_json(lists) AS columns
     FROM (
         SELECT
@@ -26,8 +28,9 @@ boardController.getBoard = async (req, res, next) => {
         FROM lists
     ) AS lists
     WHERE lists.board_id = $1;`;
-    const query = await db.query(qBody, boardID);
+    const query = await db.query(qBody, [boardID]);
     res.locals.board = query.rows;
+    return next();
   } catch (error) {
     return next({
       log: "error in boardController.getBoards",
