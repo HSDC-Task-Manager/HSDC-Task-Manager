@@ -1,7 +1,9 @@
 const User = require("../models/userModel");
 const path = require("path");
-
+const bcrypt = require("bcrypt");
 const db = require("../models/pgModel");
+
+const workFactor = 15;
 
 const userController = {};
 
@@ -9,12 +11,15 @@ const userController = {};
 userController.createUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    const userVals = [username, password];
+    const hashPassword = await bcrypt.hash(password, workFactor);
+    const userVals = [username, hashPassword];
     const query = await db.query(
       "INSERT INTO users (user_name, password) VALUES ($1, $2) RETURNING id;",
       userVals
     );
+
     res.locals.id = query.rows[0].id;
+    return next();
   } catch (err) {
     return next({
       log: "ERROR IN userController.createUser",
@@ -64,23 +69,34 @@ userController.createUser = async (req, res, next) => {
 //     });
 // };
 
-//TODO test parameterized query to ensure it works. - NN
-// SELECT EXITS query will return a boolean value
 userController.verifyUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    const userVals = [username, password];
+    const hashPassword = await bcrypt.hash(password, workFactor);
+    const userVals = [username];
     const query = await db.query(
-      "SELECT id FROM users WHERE user_name=$1 AND password=$2;",
+      "SELECT id, password FROM users WHERE user_name=$1;",
       userVals
     );
-    res.locals.verifiedUser = query !== [];
-    res.locals.id = query.rows[0].id;
-    return next();
+    bcrypt
+      .compare(hashPassword, query.rows[0].password)
+      .then((result) => {
+        // res.locals.verifiedUser = query !== [];
+        res.locals.id = query.rows[0].id;
+        return next();
+      })
+      .catch((error) => {
+        return next({
+          log: "userController.verifyUser",
+          message: {
+            err: "userController.verifyUser: Invalid username or password.",
+          },
+        });
+      });
   } catch (error) {
     return next({
       log: "userController.verifyUser",
-      message: { err: "userController.verifyUser" + error },
+      message: { err: "userController.verifyUser: Internal Error" + error },
     });
   }
 };

@@ -28,6 +28,8 @@ cardController.editCard = async (req, res, next) => {
     const cardVals = [id, name, body, listName];
     const query = await db.query(
       // TODO - update query for changing cards from one list to another by updating list_id via join/subquery
+      // SELECT list_id FROM lists WHERE lists.name=$4
+      // JOIN ... ON cards.list_id=lists.id
       "UPDATE cards SET (name, body) VALUES ($2, $3) WHERE cards.id = $1;",
       cardVals
     );

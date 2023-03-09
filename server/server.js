@@ -62,37 +62,19 @@ app.use("/build", express.static(path.resolve(__dirname, "../build")));
 app.use("/column", columnRouter);
 // app.use("/cards", cardRouter);
 
-// OLD login code - can delete when new method is confirmed working
-app.post(
-  "/login",
-  (req, res, next) => {
-    console.log("in login route");
-    return next();
-  },
-  userController.verifyUser,
-  (req, res) => {
-    // what should happen here on successful log in?
-    console.log("completing post request to '/login");
-    res.sendStatus(200);
-  }
-);
+// LOGIN ROUTE
+app.post("/login", userController.verifyUser, (req, res) => {
+  res.status(200).json(res.locals.id);
+});
 
-//NEW
+// SIGN UP ROUTE
 app.post(
   "/signup",
-  (req, res, next) => {
-    console.log("in signup route");
-    return next();
-  },
   userController.createUser,
   // sessionController.startSession,
   // cookieController.setSSIDCookie,
   (req, res) => {
-    // what should happen here on successful log in?
-    console.log("completing post request to '/signup");
-    // res.redirect('/secret');
-    res.sendStatus(200); //.json(res.locals.id)
-    // res.redirect("/");
+    res.status(200).json(res.locals.id);
   }
 );
 
