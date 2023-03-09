@@ -5,9 +5,6 @@ const columnController = require("../controllers/columnController");
 router.post("/", columnController.addColumn, (req, res) => {
   res.status(200).json("added columnController");
 });
-router.post("/delete", columnController.deleteColumn, (req, res) => {
-  res.status(200).json("removed columnController");
-});
 
 router.put("/:id", columnController.editColumn, (req, res) => {
   res.sendStatus(200);

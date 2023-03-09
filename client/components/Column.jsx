@@ -4,15 +4,6 @@ import AddCardBtn from "./buttons/AddCardBtn";
 import UserContext from "../UserContext";
 
 /*
-<Column
-  key={columnId}
-  columnName={columnName}
-  boardId={boardId}
-  cards={cardsFromColumn}
-/>
-*/
-
-/*
 "cards": [
     {
       "card_id": 10,
@@ -36,21 +27,57 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
   const [allCardsInColumn, setAllCardsInColumn] = useState([]);
 
   useEffect(() => {
-    const cardsToRender = cards.map((card) => {
-      return (
-        <Card
-          key={card.card_id}
-          cardId={card.card_id}
-          cardName={card.card_name}
-          cardBody={card.card_body}
-        />
-      );
-    });
-    setAllCardsInColumn(cardsToRender);
+    if (cards) {
+      const cardsToRender = cards.map((card) => {
+        return (
+          <Card
+            key={card.card_id}
+            cardId={card.card_id}
+            cardName={card.card_name}
+            cardBody={card.card_body}
+          />
+        );
+      });
+      setAllCardsInColumn(cardsToRender);
+    } else{
+      setAllCardsInColumn([]);
+    }
   }, []);
 
+  const handleAddCardBtnClick = (e) => {
+     // send the new card to the db as POST req
+    e.preventDefault();
+    console.log('Add Card Button Clicked!');
+    // create a new card component
+    // update state with the new card added in
+    setShowAddCardModal
 
-  // const handleDeleteColumn = (e, columnId) => {
+  } 
+  
+
+
+  return (
+    <div className="columnCont">
+      <div>{columnName}</div>
+      <div className="cardCont">{allCardsInColumn}</div>
+      <button className="addCard" type="button" onClick={handleAddCardBtnClick}>Add Card</button>
+    </div>
+  );
+}
+
+export default Column;
+//{
+  /* <AddCardBtn
+  allCardsInColumn={allCardsInColumn}
+  setAllCardsInColumn={setAllCardsInColumn}
+/> */
+//}
+//{
+  /* <button className="delete-column-button" type="button" onCLick={handleDeleteColumn}>Delete Column</button>
+<button className="edit-column-button" type="button" onCLick={handleEditColumn}>Edit Column Name</button> */
+//}
+
+// const handleDeleteColumn = (e, columnId) => {
   //   e.preventDefault();
   //   // console.log("Delete button pressed in Column.jsx");
   //   const updatedColumns = [];
@@ -61,10 +88,9 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
   //   });
   // const handleDeleteColumn = async (columnId) => {
   //   e.preventDefault();
-  //   const response = await fetch('/column/delete', {
+  //   const response = await fetch('/column/delete/${columnId}', {
   //     method: "DELETE",
   //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ columnId }),
   //   })
   //   setColumns(prevColumnData => {
   //     return prevColumnData.filter(col => {
@@ -104,19 +130,3 @@ try {
   // console.log("updatedColumns", updatedColumns);
   //   setColumns(updatedColumns);
   // };
-
-  return (
-    <div className="columnCont">
-      <div>{columnName}</div>
-      <div className="cardCont">{allCardsInColumn}</div>
-      <AddCardBtn
-        allCardsInColumn={allCardsInColumn}
-        setAllCardsInColumn={setAllCardsInColumn}
-      />
-      {/* <button className="delete-column-button" type="button" onCLick={handleDeleteColumn}>Delete Column</button>
-      <button className="edit-column-button" type="button" onCLick={handleEditColumn}>Edit Column Name</button> */}
-    </div>
-  );
-}
-
-export default Column;

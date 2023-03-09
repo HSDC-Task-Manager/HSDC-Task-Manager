@@ -34,35 +34,24 @@ userController.createUser = async (req, res, next) => {
 //TODO test parameterized query to ensure it works. - NN
 userController.verifyUser = async (req, res, next) => {
   try {
-    console.log('in user')
     const { username, password } = req.body;
-    const hashPassword = await bcrypt.hash(password, workFactor);
     const userVals = [username];
     const query = await db.query(
       "SELECT id, password FROM users WHERE user_name=$1;",
       userVals
     );
-    bcrypt
-      .compare(hashPassword, query.rows[0].password)
-      .then((result) => {
-         res.locals.verifiedUser = query !== [];
-         res.locals.id = query.rows[0].id;
-         req.session.loggedIn = true;
-         req.session.userID = query.rows[0].id;
-        return next();
-      })
-      .catch((error) => {
-        return next({
-          log: "userController.verifyUser",
-          message: {
-            err: "userController.verifyUser: Invalid username or password.",
-          },
-        });
-      });
+    const valid = await bcrypt.compare(password, query.rows[0].password)
+    if (valid) {
+      res.locals.id = query.rows[0].id;
+      req.session.loggedIn = true;
+      req.session.userID = query.rows[0].id;
+    }
+    res.locals.verifiedUser = valid;
+    return next();
   } catch (error) {
     return next({
-      log: "userController.verifyUser",
-      message: { err: "userController.verifyUser" + error },
+      log: "ERROR IN userController.verifyUser",
+      message: { err: "userController.verifyUser", error },
     });
   }
 };

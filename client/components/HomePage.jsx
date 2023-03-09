@@ -19,7 +19,6 @@ function HomePage() {
   const [newColumnName, setNewColumnName] = useState("");
 
   const navigate = useNavigate();
-  console.log("USER ID in HOME PAGE", userId);
 
   // fetch the data from the backend -- can be moved to a different file later
   useEffect(() => {
@@ -48,7 +47,10 @@ function HomePage() {
     setColumns(allColumns);
   }, []);
 
-  console.log("Columns outside of useEffect in HomePage.jsx: ", columns);
+  useEffect(() => {
+    console.log("USER ID in HOME PAGE", userId);
+    console.log("Columns outside of useEffect in HomePage.jsx: ", columns);
+  }, []);
 
   // TODO: add functionality on logout to end the user session - DN?
   const routeToSignIn = (e) => {
@@ -63,7 +65,8 @@ function HomePage() {
     setShowColumnCreatorModal(true);
   };
 
-  const handleCreateColumn = async () => {
+  const handleCreateColumn = async (e) => {
+    e.preventDefault();
     console.log("Column being created");
     // send column name and boardID in post req
     const columnIdRes = await fetch("/column", {
@@ -113,12 +116,7 @@ function HomePage() {
         <div className="">
           <form className="" onSubmit={handleCreateColumn}>
             <label>
-              <input
-                className=""
-                type="text"
-                value="New Column Name"
-                onChange={handleNameChange}
-              />
+              <input className="" type="text" onChange={handleNameChange} />
             </label>
             <button type="submit">Submit</button>
           </form>
