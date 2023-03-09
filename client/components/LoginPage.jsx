@@ -27,8 +27,9 @@ function LoginPage() {
         body: JSON.stringify(loginData),
       });
       console.log("RESULT FROM LOGIN REQUEST: ", result);
-      // TODO: fix this when the backend is ready - CS & NN
+      // TODO: fix this when the backend is ready & grab userId- CS & NN
       setIsLoggedIn(true);
+      setUserId(res.userId);
     } catch (error) {
       console.log("incorrect username or password", error);
     }
