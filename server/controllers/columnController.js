@@ -2,7 +2,7 @@ const db = require("../models/pgModel");
 
 const columnController = {};
 
-columnController.addColumn = (req, res, next) => {
+columnController.addColumn = async (req, res, next) => {
   try {
     console.log("columnController.addColumn");
     console.log("req.body: ", req.body);
@@ -10,7 +10,8 @@ columnController.addColumn = (req, res, next) => {
     const columnVals = [columnName, boardID];
     const addColumnQ =
       "INSERT INTO lists (name, board_id) VALUES ($1, $2) RETURNING id;";
-    const query = db.query(addColumnQ, columnVals);
+    const query = await db.query(addColumnQ, columnVals);
+    console.log("insert column successful with ", query.rows);
     res.locals.id = query.rows[0].id;
     return next();
   } catch (error) {
@@ -22,8 +23,9 @@ columnController.addColumn = (req, res, next) => {
 
 columnController.editColumn = async (req, res, next) => {
   try {
-    const { id, name } = req.body;
-    const colVals = [id, name];
+    const { columnName } = req.body;
+    const { id } = req.params;
+    const colVals = [id, columnName];
     const query = await db.query(
       "UPDATE lists SET name = $2 WHERE lists.id = $1;",
       colVals
@@ -39,8 +41,8 @@ columnController.editColumn = async (req, res, next) => {
 
 columnController.deleteColumn = async (req, res, next) => {
   try {
-    const { id } = req.body;
-    const query = await db.query("DELETE FROM lists WHERE id = $1", id);
+    const { id } = req.params;
+    const query = await db.query("DELETE FROM lists WHERE id = $1", [id]);
     return next();
   } catch (err) {
     return next({

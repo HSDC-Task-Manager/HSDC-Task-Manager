@@ -1,49 +1,6 @@
-// const Board = require("../models/boardModel");
-// const mongoose = require('mongoose');
-
 const db = require("../models/pgModel");
 
 const boardController = {};
-/* previous mongo query */
-// boardController.getBoards = (req, res, next) => {
-//   console.log('running boardController.getBoard. res.locals: ', res.locals)
-//   let { boardIds } = res.locals;
-
-//   Board.find({_id: {$in: boardIds}})
-//     .then(response => {
-//       res.locals.boards = response;
-//       return next();
-//     })
-//     .catch((err) => {
-//       return next({
-//         log: "error in boardController.getBoards",
-//         message: { err: "boardController.getBoards" + err },
-//       });
-//     });
-// };
-
-/* DISASTER MESS OF A QUERY FOR GETTING ALL LISTS FROM A BOARD:
-SELECT row_to_json(lists) AS lists
-FROM (
-    SELECT
-    	lists.id,
-    	lists.name,
-    	lists.board_id,
-        (
-        	SELECT jsonb_agg(nested_cards)
-        	FROM (
-	        	SELECT
-		     		cards.id,
-		     		cards.name,
-		     		cards.text_body
-		     		FROM cards
-		     		WHERE cards.list_id = lists.id
-        	) AS nested_cards
-        ) AS cards
-    FROM lists
-) AS lists
-WHERE lists.board_id = $1;
-*/
 
 boardController.getBoard = async (req, res, next) => {
   try {
@@ -70,7 +27,7 @@ boardController.getBoard = async (req, res, next) => {
     ) AS lists
     WHERE lists.board_id = $1;`;
     const query = await db.query(qBody, boardID);
-    res.locals.boards = query.rows;
+    res.locals.board = query.rows;
   } catch (error) {
     return next({
       log: "error in boardController.getBoards",

@@ -1,4 +1,5 @@
 const db = require("../models/pgModel");
+const columnController = require("./columnController");
 
 const cardController = {};
 
@@ -6,8 +7,8 @@ cardController.getCards = (req, res, next) => {};
 
 cardController.addCard = async (req, res, next) => {
   try {
-    const { name, text_body, list_id } = req.body;
-    const cardVals = [name, text_body, list_id];
+    const { name, body, columnID } = req.body;
+    const cardVals = [name, body, columnID];
     const query = await db.query(
       "INSERT INTO cards (name, text_body, list_id) VALUES ($1, $2, $3) RETURNING id;",
       cardVals
@@ -24,11 +25,14 @@ cardController.addCard = async (req, res, next) => {
 
 cardController.editCard = async (req, res, next) => {
   try {
-    const { id, name, body, listName } = req.body;
-    const cardVals = [id, name, body, listName];
+    const { name, body, columnName } = req.body;
+    const { id } = req.params;
+    const cardVals = [id, name, body, columnName];
     const query = await db.query(
       // TODO - update query for changing cards from one list to another by updating list_id via join/subquery
-      "UPDATE cards SET (name, body) VALUES ($2, $3) WHERE cards.id = $1;",
+      // SELECT list_id FROM lists WHERE lists.name=$4
+      // JOIN ... ON cards.list_id=lists.id
+      "UPDATE cards SET name = $2, text_body = $3, list_id = (SELECT l.id FROM lists l WHERE l.name = $4 AND l.board_id = (SELECT l.board_id FROM lists l WHERE l.id = (SELECT c.list_id FROM cards c WHERE c.id = $1))) WHERE cards.id = $1;",
       cardVals
     );
     return next();
@@ -42,8 +46,8 @@ cardController.editCard = async (req, res, next) => {
 
 cardController.deleteCard = async (req, res, next) => {
   try {
-    const { id } = req.body;
-    const query = await db.query("DELETE FROM cards WHERE id = $1", id);
+    const { id } = req.params;
+    const query = await db.query("DELETE FROM cards WHERE id = $1", [id]);
     return next();
   } catch (err) {
     return next({
@@ -52,3 +56,5 @@ cardController.deleteCard = async (req, res, next) => {
     });
   }
 };
+
+module.exports = cardController;

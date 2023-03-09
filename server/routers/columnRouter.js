@@ -2,9 +2,16 @@ const express = require("express");
 const router = express.Router();
 const columnController = require("../controllers/columnController");
 //CRUD -- COLUMNS
-//add
-router.post("/add", columnController.addColumn, (req, res) => {
+router.post("/", columnController.addColumn, (req, res) => {
   res.status(200).json("added columnController");
+});
+
+router.put("/:id", columnController.editColumn, (req, res) => {
+  res.sendStatus(200);
+});
+
+router.delete("/:id", columnController.deleteColumn, (req, res) => {
+  res.sendStatus(200);
 });
 
 module.exports = router;
