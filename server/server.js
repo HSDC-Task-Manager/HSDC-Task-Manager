@@ -6,7 +6,7 @@ const userController = require("./controllers/userController");
 const sessionController = require("./controllers/sessionController");
 const cookieController = require("./controllers/cookieController");
 const boardController = require("./controllers/boardController");
-conse cardController = require("./controllers/cardController")
+const cardController = require("./controllers/cardController");
 const session = require("express-session");
 const columnRouter = require("./routers/columnRouter");
 const cardRouter = require("./routers/cardRouter");
@@ -15,18 +15,19 @@ const cardRouter = require("./routers/cardRouter");
 const app = express();
 const PORT = 3000;
 
-const mongoURI =
-  "mongodb+srv://shendo87:UIOqlCfrXxZJYeJL@cluster0.kzkmgom.mongodb.net/?retryWrites=true&w=majority";
-mongoose
-  .connect(mongoURI, {
-    // options for the connect method to parse the URI
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // sets the name of the DB that our collections are part of
-    dbName: "scratch_project",
-  })
-  .then(() => console.log("Connected to Mongo DB."))
-  .catch((err) => console.log(err));
+// OLD MONGO DB CONNECTION
+// const mongoURI =
+//   "mongodb+srv://shendo87:UIOqlCfrXxZJYeJL@cluster0.kzkmgom.mongodb.net/?retryWrites=true&w=majority";
+// mongoose
+//   .connect(mongoURI, {
+//     // options for the connect method to parse the URI
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     // sets the name of the DB that our collections are part of
+//     dbName: "scratch_project",
+//   })
+//   .then(() => console.log("Connected to Mongo DB."))
+//   .catch((err) => console.log(err));
 
 // handle parsing request body
 app.use(express.json());
@@ -56,8 +57,6 @@ app.use("/build", express.static(path.resolve(__dirname, "../build")));
 //     res.status(200).json(res.locals.boards);
 //   }
 // );
-
-
 
 //CRUD ROUTERS
 app.use("/column", columnRouter);
@@ -92,7 +91,7 @@ app.post(
     // what should happen here on successful log in?
     console.log("completing post request to '/signup");
     // res.redirect('/secret');
-    res.sendStatus(200)//.json(res.locals.id)
+    res.sendStatus(200); //.json(res.locals.id)
     // res.redirect("/");
   }
 );
