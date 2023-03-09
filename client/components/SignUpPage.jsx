@@ -18,17 +18,17 @@ function SignUpPage() {
   // fetch request to signup user
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('isLoggedIn is ', isLoggedIn);
+    console.log("isLoggedIn is ", isLoggedIn);
     const loginData = { username, password };
     console.log("USERNAME: ", username);
     console.log("PASSWORD: ", password);
-    fetch("/signup", {
+    fetch("/user/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData),
     })
       .then((res) => {
-        console.log('res.status in signup page: ', res.status);
+        console.log("res.status in signup page: ", res.status);
         if (res.status === 200) {
           setIsLoggedIn(true);
         }

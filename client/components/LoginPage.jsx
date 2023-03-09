@@ -21,7 +21,7 @@ function LoginPage() {
       e.preventDefault();
       console.log("SIGN IN BUTTON FIRED IN LOGIN PAGE");
       const loginData = { username, password };
-      const result = await fetch("/login", {
+      const result = await fetch("/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
