@@ -1,6 +1,8 @@
 .card {
-  height: 100px;
+  display: flex;
+  flex-direction: column;
   background-color: $color2;
+  border: 1px solid $color3;
   border-radius: 10px;
   color: black;
   padding: 10px;

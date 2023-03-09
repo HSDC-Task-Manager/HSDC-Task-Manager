@@ -9,6 +9,8 @@ const UserContext = createContext({
   setIsLoggedIn: () => {},
   userId: "",
   setUserId: () => {},
+  boardData: "",
+  setBoardData: () => {},
   boardId: "",
   setBoardId: () => {},
 });

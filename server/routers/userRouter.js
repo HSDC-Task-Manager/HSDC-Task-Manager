@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
+const boardController = require('../controllers/boardController');
 
 router.post(
   "/login",
   userController.verifyUser,
   userController.getBoardIds,
+  boardController.getBoard,
   (req, res) => {
     res.status(200).json(res.locals);
   }

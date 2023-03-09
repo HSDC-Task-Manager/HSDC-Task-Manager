@@ -11,6 +11,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState("");
+  const [boardData, setBoardData] = useState([]);
   const [boardId, setBoardId] = useState("");
 
   // useMemo is used to prevent unnecessary re-renders
@@ -24,6 +25,8 @@ function App() {
       setIsLoggedIn,
       userId,
       setUserId,
+      boardData,
+      setBoardData,
       boardId,
       setBoardId,
     }),

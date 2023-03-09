@@ -1,13 +1,17 @@
 const path = require("path");
 const db = require("../models/pgModel");
+const bcrypt = require('bcrypt');
 
 const userController = {};
+const workFactor = 15;
 
 // Create new user
 userController.createUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    const userVals = [username, password];
+    // const userVals = [username, password];
+    const hashPassword = await bcrypt.hash(password, workFactor);
+    const userVals = [username, hashPassword];
     const query = await db.query(
       "INSERT INTO users (user_name, password) VALUES ($1, $2) RETURNING id;",
       userVals
@@ -30,17 +34,31 @@ userController.createUser = async (req, res, next) => {
 //TODO test parameterized query to ensure it works. - NN
 userController.verifyUser = async (req, res, next) => {
   try {
+    console.log('in user')
     const { username, password } = req.body;
-    const userVals = [username, password];
+    const hashPassword = await bcrypt.hash(password, workFactor);
+    const userVals = [username];
     const query = await db.query(
-      "SELECT id FROM users WHERE user_name=$1 AND password=$2;",
+      "SELECT id, password FROM users WHERE user_name=$1;",
       userVals
     );
-    res.locals.verifiedUser = query !== [];
-    res.locals.id = query.rows[0].id;
-    req.session.loggedIn = true;
-    req.session.userID = query.rows[0].id;
-    return next();
+    bcrypt
+      .compare(hashPassword, query.rows[0].password)
+      .then((result) => {
+         res.locals.verifiedUser = query !== [];
+         res.locals.id = query.rows[0].id;
+         req.session.loggedIn = true;
+         req.session.userID = query.rows[0].id;
+        return next();
+      })
+      .catch((error) => {
+        return next({
+          log: "userController.verifyUser",
+          message: {
+            err: "userController.verifyUser: Invalid username or password.",
+          },
+        });
+      });
   } catch (error) {
     return next({
       log: "userController.verifyUser",
@@ -81,28 +99,6 @@ module.exports = userController;
 // TODO: USE THIS CODE TO RE-IMPLEMENT BCRYPT - NN
 /*
 
-userController.createUser = async (req, res, next) => {
-  try {
-    const { username, password } = req.body;
-    const hashPassword = await bcrypt.hash(password, workFactor);
-    const userVals = [username, hashPassword];
-    const query = await db.query(
-      "INSERT INTO users (user_name, password) VALUES ($1, $2) RETURNING id;",
-      userVals
-    );
-
-    res.locals.id = query.rows[0].id;
-    return next();
-  } catch (err) {
-    return next({
-      log: "ERROR IN userController.createUser",
-      message: {
-        err: "userController.createUser: username and password must be provided",
-      },
-    });
-  }
-};
-
 userController.verifyUser = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -131,6 +127,88 @@ userController.verifyUser = async (req, res, next) => {
     return next({
       log: "userController.verifyUser",
       message: { err: "userController.verifyUser: Internal Error" + error },
+    });
+  }
+};
+*/
+
+
+//BACKUP VERIFY USER AND CREATE USER
+/*
+const path = require("path");
+const db = require("../models/pgModel");
+// const bcrypt = require('bcrypt');
+
+const userController = {};
+// const workFactor = 15;
+
+// Create new user
+userController.createUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const userVals = [username, password];
+    // const hashPassword = await bcrypt.hash(password, workFactor);
+    // const userVals = [username, hashPassword];
+    const query = await db.query(
+      "INSERT INTO users (user_name, password) VALUES ($1, $2) RETURNING id;",
+      userVals
+    );
+    console.log("returned id is, ", query.rows);
+    res.locals.id = query.rows[0].id;
+    req.session.loggedIn = true;
+    req.session.userID = id;
+    return next();
+  } catch (err) {
+    return next({
+      log: "ERROR IN userController.createUser",
+      message: {
+        err: "userController.createUser: username and password must be provided",
+      },
+    });
+  }
+};
+
+//TODO test parameterized query to ensure it works. - NN
+userController.verifyUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const userVals = [username, password];
+    // const hashPassword = await bcrypt.hash(password, workFactor);
+    // const userVals = [username];
+    // const query = await db.query(
+    //   "SELECT id, password FROM users WHERE user_name=$1;",
+    //   userVals
+    // );
+    // bcrypt
+    //   .compare(hashPassword, query.rows[0].password)
+    //   .then((result) => {
+    //      res.locals.verifiedUser = query !== [];
+    //      res.locals.id = query.rows[0].id;
+    //      req.session.loggedIn = true;
+    //      req.session.userID = query.rows[0].id;
+    //     return next();
+    //   })
+    //   .catch((error) => {
+    //     return next({
+    //       log: "userController.verifyUser",
+    //       message: {
+    //         err: "userController.verifyUser: Invalid username or password.",
+    //       },
+    //     });
+    //   });
+    const query = await db.query(
+      "SELECT id FROM users WHERE user_name=$1 AND password=$2;",
+      userVals
+    );
+    res.locals.verifiedUser = query !== [];
+    res.locals.id = query.rows[0].id;
+    req.session.loggedIn = true;
+    req.session.userID = query.rows[0].id;
+    return next();
+  } catch (error) {
+    return next({
+      log: "userController.verifyUser",
+      message: { err: "userController.verifyUser" + error },
     });
   }
 };

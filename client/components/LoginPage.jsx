@@ -15,6 +15,8 @@ function LoginPage() {
     setUserId,
     boardId,
     setBoardId,
+    boardData,
+    setBoardData,
   } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -23,7 +25,6 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      console.log("SIGN IN BUTTON FIRED IN LOGIN PAGE");
       const loginData = { username, password };
       const result = await fetch("/user/login", {
         method: "POST",
@@ -31,9 +32,10 @@ function LoginPage() {
         body: JSON.stringify(loginData),
       });
       const data = await result.json();
-      console.log("data: ", data);
+      console.log("boards received are: ", data.board);
       // TODO: fix this when the backend is ready & grab userId- CS & NN
       setBoardId(data.boardID);
+      setBoardData(data.board);
       setUserId(data.id);
       setIsLoggedIn(true);
     } catch (error) {
