@@ -1,8 +1,17 @@
-//CRUD--CARDS
-//get
+const express = require("express");
+const router = express.Router();
+const cardController = require("../controllers/cardController");
 
-//add
+router.post("/", cardController.addCard, (req, res) => {
+  res.status(200).json("added cardController");
+});
 
-//delete
+router.put("/:id", cardController.editCard, (req, res) => {
+  res.sendStatus(200);
+});
 
-//edit
+router.delete("/:id", cardController.deleteCard, (req, res) => {
+  res.sendStatus(200);
+});
+
+module.exports = router;

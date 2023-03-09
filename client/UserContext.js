@@ -7,8 +7,10 @@ const UserContext = createContext({
   setPassword: () => {},
   isLoggedIn: false,
   setIsLoggedIn: () => {},
-  userId: 1,
+  userId: "",
   setUserId: () => {},
+  boardId: "",
+  setBoardId: () => {},
 });
 
 export default UserContext;

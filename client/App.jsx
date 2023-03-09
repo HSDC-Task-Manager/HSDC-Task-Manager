@@ -9,8 +9,9 @@ function App() {
   // state is stored here and passed down to components
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // <--- TODO: set to FALSE on launch and uncomment the routes - CS & NN
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState("");
+  const [boardId, setBoardId] = useState("");
 
   // useMemo is used to prevent unnecessary re-renders
   const contextValue = useMemo(
@@ -23,19 +24,20 @@ function App() {
       setIsLoggedIn,
       userId,
       setUserId,
+      boardId,
+      setBoardId,
     }),
-    [username, password, isLoggedIn, userId]
+    [username, password, isLoggedIn, userId, boardId]
   );
 
   // contextValue is passed down to all components and can be accessed with useContext
   return (
     <UserContext.Provider value={contextValue}>
       <div>
-        <HomePage />
         <Routes>
-          {/* <Route path="/" element={<LoginPage />} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/homepage" element={<HomePage />} /> */}
+          <Route path="/homepage" element={<HomePage />} />
         </Routes>
       </div>
     </UserContext.Provider>

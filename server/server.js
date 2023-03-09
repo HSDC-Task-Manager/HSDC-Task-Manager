@@ -2,30 +2,17 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const userController = require("./controllers/userController");
-const sessionController = require("./controllers/sessionController");
-const cookieController = require("./controllers/cookieController");
-const boardController = require("./controllers/boardController");
 const session = require("express-session");
 const columnRouter = require("./routers/columnRouter");
 const cardRouter = require("./routers/cardRouter");
+const boardRouter = require("./routers/boardRouter");
+const userRouter = require("./routers/userRouter");
+const sessionRouter = require("./routers/sessionRouter");
+const workspaceRouter = require("./routers/workspaceRouter");
 
 // setup app and port
 const app = express();
 const PORT = 3000;
-
-const mongoURI =
-  "mongodb+srv://shendo87:UIOqlCfrXxZJYeJL@cluster0.kzkmgom.mongodb.net/?retryWrites=true&w=majority";
-mongoose
-  .connect(mongoURI, {
-    // options for the connect method to parse the URI
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // sets the name of the DB that our collections are part of
-    dbName: "scratch_project",
-  })
-  .then(() => console.log("Connected to Mongo DB."))
-  .catch((err) => console.log(err));
 
 // handle parsing request body
 app.use(express.json());
@@ -45,64 +32,13 @@ app.use(cors());
 // handle requests for static files (bundle.js)
 app.use("/build", express.static(path.resolve(__dirname, "../build")));
 
-// route handlers
-// app.post(
-//   "/api",
-//   sessionController.isLoggedIn,
-//   userController.getBoardIds,
-//   boardController.getBoards,
-//   (req, res) => {
-//     res.status(200).json(res.locals.boards);
-//   }
-// );
-
-//CRUD ROUTERS
+// CRUD ROUTERS
 app.use("/column", columnRouter);
-// app.use("/cards", cardRouter);
-
-// OLD login code - can delete when new method is confirmed working
-app.post(
-  "/login",
-  (req, res, next) => {
-    console.log("in login route");
-    return next();
-  },
-  userController.verifyUser,
-  (req, res) => {
-    // what should happen here on successful log in?
-    console.log("completing post request to '/login");
-    res.sendStatus(200);
-  }
-);
-
-//NEW
-app.post(
-  "/signup",
-  (req, res, next) => {
-    console.log("in signup route");
-    return next();
-  },
-  userController.createUser,
-  // sessionController.startSession,
-  // cookieController.setSSIDCookie,
-  (req, res) => {
-    // what should happen here on successful log in?
-    console.log("completing post request to '/signup");
-    // res.redirect('/secret');
-    res.sendStatus(200)//.json(res.locals.id)
-    // res.redirect("/");
-  }
-);
-
-// Check for active sessions
-app.get("/session", sessionController.validateSession, (req, res) =>
-  res.status(200).send(res.locals)
-);
-// Delete session on logout
-//NEW
-app.delete("/session", sessionController.deleteSession, (req, res) =>
-  res.sendStatus(200)
-);
+app.use("/card", cardRouter);
+app.use("/board", boardRouter);
+app.use("/user", userRouter);
+app.use("/session", sessionRouter);
+app.use("/workspace", workspaceRouter);
 
 // server index.html
 app.get("/", (req, res) => {

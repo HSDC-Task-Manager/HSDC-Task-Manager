@@ -1,14 +1,23 @@
-const User = require("../models/userModel");
 const path = require("path");
+const db = require("../models/pgModel");
 
 const userController = {};
 
 // Create new user
-userController.createUser = (req, res, next) => {
-  const { username, password } = req.body;
-  console.log("in userController.createUser");
-
-  if (!username || !password) {
+userController.createUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const userVals = [username, password];
+    const query = await db.query(
+      "INSERT INTO users (user_name, password) VALUES ($1, $2) RETURNING id;",
+      userVals
+    );
+    console.log("returned id is, ", query.rows);
+    res.locals.id = query.rows[0].id;
+    req.session.loggedIn = true;
+    req.session.userID = id;
+    return next();
+  } catch (err) {
     return next({
       log: "ERROR IN userController.createUser",
       message: {
@@ -16,68 +25,28 @@ userController.createUser = (req, res, next) => {
       },
     });
   }
-  User.create({ username, password })
-    .then((user) => {
-      console.log('user created')
-      res.locals.user = user;
-      console.log('current session is ', req.session);
-      // NOTE: Please work the following line into the SQL refactor promise resuolution of user creation to preserve session auth:
-      req.session.loggedIn = true;
-      console.log("session is now logged in? ", req.session.loggedIn);
-      next();
-    })
-    .catch((err) => {
-      if (err.code === 11000) {
-        console.log(err);
-        return next({
-          log: "ERROR 11000 in userController.verifyUser",
-          status: 400,
-          message: { err: "username already exists" },
-        });
-      }
-      return next({
-        log: "ERROR IN userController.verifyUser",
-        message: { err: "userController.verifyUser" + err },
-      });
-    });
 };
 
-// Verify user
-userController.verifyUser = (req, res, next) => {
-  const { username, password } = req.body;
-
-  // ERROR HANDLING
-  if (!username || !password) {
-    console.log(
-      "Error in userController.verifyUser: username and password must be provided"
+//TODO test parameterized query to ensure it works. - NN
+userController.verifyUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const userVals = [username, password];
+    const query = await db.query(
+      "SELECT id FROM users WHERE user_name=$1 AND password=$2;",
+      userVals
     );
-    return next("username and password must be provided");
-  }
-
-  // check if req.body.username matches a username in the database
-
-  User.findOne({ username: username })
-    .exec()
-    .then((user) => {
-      if (!user || password !== user.password) {
-        console.log("no password match");
-        // return res.redirect("/signup");
-      }
-      // valid user
-      else {
-        console.log("res.locals: ", res.locals);
-        res.locals.user = user; // _id, username, password, boardIDs
-        // NOTE: Please work the following line into the SQL refactor promise resolution of user validation to preserve session auth:
-        req.session.loggedIn = true;
-        return next();
-      }
-    })
-    .catch((err) => {
-      return next({
-        log: "ERROR IN userController.verifyUser",
-        message: { err: "userController.verifyUser", err },
-      });
+    res.locals.verifiedUser = query !== [];
+    res.locals.id = query.rows[0].id;
+    req.session.loggedIn = true;
+    req.session.userID = query.rows[0].id;
+    return next();
+  } catch (error) {
+    return next({
+      log: "userController.verifyUser",
+      message: { err: "userController.verifyUser" + error },
     });
+  }
 };
 
 /* * * *
@@ -88,22 +57,81 @@ userController.verifyUser = (req, res, next) => {
  * source for these variables should be from request body destructuring.
  * * * */
 
-userController.getBoardIds = (req, res, next) => {
-  console.log("running userController.getBoardIds. req.body: ", req.body);
-  let { username } = req.body;
-
-  User.findOne({ username })
-    .exec()
-    .then((response) => {
-      res.locals.boardIds = response.board_ids;
-      return next();
-    })
-    .catch((err) => {
-      return next({
-        log: "error in userController.getBoardIds",
-        message: { err: "userController.getBoardIds" + err },
-      });
+userController.getBoardIds = async (req, res, next) => {
+  try {
+    const { id } = res.locals;
+    const query = await db.query(
+      "SELECT boards.id, boards.name FROM workspaces INNER JOIN users ON workspaces.user_id = users.id INNER JOIN boards ON workspaces.board_id = boards.id WHERE workspaces.user_id = $1;",
+      [id]
+    );
+    //note, only index 0 while we only have 1 board
+    console.log("query rows are ", query.rows[0].id);
+    res.locals.boardID = query.rows[0].id;
+    return next();
+  } catch (error) {
+    return next({
+      log: "error in userController.getBoardIds",
+      message: { err: "userController.getBoardIds" + error },
     });
+  }
 };
 
 module.exports = userController;
+
+// TODO: USE THIS CODE TO RE-IMPLEMENT BCRYPT - NN
+/*
+
+userController.createUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const hashPassword = await bcrypt.hash(password, workFactor);
+    const userVals = [username, hashPassword];
+    const query = await db.query(
+      "INSERT INTO users (user_name, password) VALUES ($1, $2) RETURNING id;",
+      userVals
+    );
+
+    res.locals.id = query.rows[0].id;
+    return next();
+  } catch (err) {
+    return next({
+      log: "ERROR IN userController.createUser",
+      message: {
+        err: "userController.createUser: username and password must be provided",
+      },
+    });
+  }
+};
+
+userController.verifyUser = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const hashPassword = await bcrypt.hash(password, workFactor);
+    const userVals = [username];
+    const query = await db.query(
+      "SELECT id, password FROM users WHERE user_name=$1;",
+      userVals
+    );
+    bcrypt
+      .compare(hashPassword, query.rows[0].password)
+      .then((result) => {
+        // res.locals.verifiedUser = query !== [];
+        res.locals.id = query.rows[0].id;
+        return next();
+      })
+      .catch((error) => {
+        return next({
+          log: "userController.verifyUser",
+          message: {
+            err: "userController.verifyUser: Invalid username or password.",
+          },
+        });
+      });
+  } catch (error) {
+    return next({
+      log: "userController.verifyUser",
+      message: { err: "userController.verifyUser: Internal Error" + error },
+    });
+  }
+};
+*/

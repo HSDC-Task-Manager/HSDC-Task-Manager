@@ -29,7 +29,7 @@ module.exports = {
   plugins: [new HTMLWebpackPlugin({ template: "./index.html" })],
   devServer: {
     static: {
-      directory: path.resolve(__dirname, "build"),
+      directory: path.resolve(__dirname, "./dist"),
       publicPath: "/",
     },
     port: 8080,
@@ -39,6 +39,8 @@ module.exports = {
         changeOrigin: true,
       },
     },
+    hot: true,
+    compress: true,
   },
   resolve: {
     extensions: [".js", ".jsx", ".json", ".html"],
