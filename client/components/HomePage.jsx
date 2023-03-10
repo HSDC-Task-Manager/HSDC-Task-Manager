@@ -1,40 +1,57 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../UserContext";
-import ColumnModal from "./modals/ColumnModal";
-import CardModal from "./modals/CardModal";
+import BoardContext from "../BoardContext";
 import Column from "./Column";
-import NameColumn from "./NameColumn";
 import request from "../request";
+import { render } from "react-dom";
 
 function HomePage() {
   // TODO: refactor state as necessary upon completion of other components - CS
-  const { username, isLoggedIn, setIsLoggedIn } = useContext(UserContext);
-  const [showColumnModal, setShowColumnModal] = useState(false);
-  const [showCardModal, setShowCardModal] = useState(false);
-  const [boardData, setBoardData] = useState([]);
-  const [currBoardID, setCurrBoardID] = useState("");
+  const { username, userId, isLoggedIn, setIsLoggedIn, boardId, boardData } =
+    useContext(UserContext);
+
+  // this is an array of the Column components
+  const [columns, setColumns] = useState([]);
+  // boolean to display the Column Creator modal
+  const [showColumnCreatorModal, setShowColumnCreatorModal] = useState(false);
+  const [newColumnName, setNewColumnName] = useState("");
+
   const navigate = useNavigate();
 
-  // fetches data from the server and stores the data in the boardData state
+  // fetch the data from the backend -- can be moved to a different file later
   useEffect(() => {
-    // request.Boards(username, setBoardData, setCurrBoardID);
-  }, [isLoggedIn]);
+    // we use this to filter out the object portion of the boardData state
+    // const allColumnObjects = [];
+    // boardData.forEach((board) => {
+    //   allColumnObjects.push(board.columns);
+    // });
 
-  // TODO: refactor this to be dynamic - CS
-  let renderColumns = [];
-  // creates the array of columns to render
-  if (boardData.length !== 0) {
-    renderColumns = boardData[0].columns.map((column, index) => (
-      <Column
-        key={index}
-        columnName={column.columnName}
-        cards={column.cards}
-        setShowCardModal={setShowCardModal}
-      />
-    ));
-  }
-  // routes back to the sign in page when clicking log out
+    // this is is our actual array of Column components
+    const allColumns = [];
+    boardData.forEach((obj) => {
+      const cardsFromColumn = obj.cards;
+      const columnName = obj.column_name;
+      const columnId = obj.column_id;
+      allColumns.push(
+        <Column
+          key={columnId}
+          columnId={columnId}
+          columnName={columnName}
+          boardId={boardId}
+          cards={cardsFromColumn}
+          setColumns={setColumns}
+        />
+      );
+    });
+    setColumns(allColumns);
+  }, []);
+
+  useEffect(() => {
+    console.log("USER ID in HOME PAGE", userId);
+    console.log("Columns outside of useEffect in HomePage.jsx: ", columns);
+  }, []);
+
   // TODO: add functionality on logout to end the user session - DN?
   const routeToSignIn = (e) => {
     e.preventDefault();
@@ -42,60 +59,133 @@ function HomePage() {
     navigate("/");
   };
 
-  // modal logic
-  // TODO: refactor this with input from AK to implement CRUD functionality - CS & AK
-  let overlay = null;
+  const handleAddColumnBtnClick = (e) => {
+    e.preventDefault();
+    console.log("Add column button clicked!");
+    setShowColumnCreatorModal(true);
+  };
 
-  if (showColumnModal || showCardModal) overlay = <div className="overlay" />;
-  else overlay = null;
+  const handleCreateColumn = async (e) => {
+    try {
+      e.preventDefault();
+
+      console.log("Column being created");
+      // send column name and boardID in post req
+      const columnIdRes = await fetch("/column", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ boardId, newColumnName }),
+      });
+      // handle returned columnID from server
+      const columnId = await columnIdRes.json();
+      // set new column as variable
+      const newCol = (
+        <Column
+          key={columnId}
+          columnId={columnId}
+          columnName={newColumnName}
+          boardId={boardId}
+          // double check the cards drilling
+          cards={[]}
+          setColumns={setColumns}
+        />
+      );
+      // update column list in state with new column
+      setColumns((prevColumns) => {
+        return [...prevColumns, newCol];
+      });
+      setNewColumnName("");
+      setShowColumnCreatorModal(false);
+    } catch (err) {
+      console.log("ERROR in handleCreateColumn", err);
+    }
+  };
+
+  const handleNameChange = (e) => setNewColumnName(e.target.value);
+
+  const handleCancelClick = (e) => {
+    setShowColumnCreatorModal(false);
+    setNewColumnName("");
+  };
 
   return (
     <div className="homeCont">
-      {overlay}
       <header className="homeHeader">
-        <h1>Home Page</h1>
-        <button className="logOut" type="button" onClick={routeToSignIn}>
-          LOG OUT
-        </button>
-      </header>
-      <div className="boardDisplay">
-        <div className="modal-box">
-          {showColumnModal ? (
-            <ColumnModal
-              showColumnModal={showColumnModal}
-              setShowColumnModal={setShowColumnModal}
-              showCardModal={showCardModal}
-              setShowCardModal={setShowCardModal}
-              boardData={boardData}
-              currBoardID={currBoardID}
-              setBoardData={setBoardData}
-            />
-          ) : (
-            <div />
-          )}
-          {showCardModal ? (
-            <CardModal
-              showCardModal={showCardModal}
-              setShowCardModal={setShowCardModal}
-            />
-          ) : (
-            <div />
-          )}
-        </div>
-        <div className="column-container">{renderColumns}</div>
-        <div>
+        <div className="home-page-title">Home Page</div>
+        <div className="navBarButtons">
           <button
             className="addColumn"
             type="button"
-            onClick={() => setShowColumnModal(true)}
+            onClick={handleAddColumnBtnClick}
           >
             ADD COLUMN
           </button>
+          <button className="logOut" type="button" onClick={routeToSignIn}>
+            LOG OUT
+          </button>
         </div>
-      </div>
-      <NameColumn />
+      </header>
+      {showColumnCreatorModal && (
+        <div className="">
+          <form className="" onSubmit={handleCreateColumn}>
+            <label>
+              <input className="" type="text" onChange={handleNameChange} />
+            </label>
+            <button type="submit">Submit</button>
+            <button type="button" onClick={handleCancelClick}>
+              Cancel
+            </button>
+          </form>
+        </div>
+      )}
+      <div className="boardDisplay">{columns}</div>
     </div>
   );
 }
 
 export default HomePage;
+
+// DUMMY DATA TO RENDER
+/*
+[
+  {
+    "column_id": 7,
+    "column_name": "In Progress",
+    "board_id": 4,
+    "cards": [
+        {
+            "card_id": 10,
+            "card_body": "Switch styling to match color board.",
+            "card_name": "Update Styling"
+        },
+        {
+            "card_id": 11,
+            "card_body": "Review code and refactor.",
+            "card_name": "Optimize Rendering"
+        },
+        {
+            "card_id": 12,
+            "card_body": "Add testing for future TDD and ensuring current features work as intended.",
+            "card_name": "Testing"
+        }
+    ]
+  },
+  {
+    "column_id": 8,
+    "column_name": "Completed",
+    "board_id": 4,
+    "cards": [
+        {
+            "card_id": 8,
+            "card_body": "Replace conditional rendering with router to enhance UI/UX and codebase readablity",
+            "card_name": "Implement React Router"
+        },
+        {
+            "card_id": 9,
+            "card_body": "Modularize components for reusability.",
+            "card_name": "Refactor Components"
+        }
+      ] 
+  }
+]
+*/

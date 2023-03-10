@@ -1,3 +1,17 @@
+// EXAMPLE HUGH OBJECT
+/*
+  [{
+    "column_id": 2,
+    "column_name": "Add test card 2",
+    "board_id": 2,
+    "cards": [{
+      "card_id": 2,
+      "card_body": "this is the second test card",
+      "card_name": "Test Card 2"
+    },{cards...}]
+  }, {columns...]
+  */
+
 const request = {};
 //TODO ALEX: need to refactor for SQL data;
 request.Boards = (userName, setBoardState, setID) => {
@@ -19,11 +33,10 @@ request.Boards = (userName, setBoardState, setID) => {
 //COLUMNS___
 //add
 request.addColumn = (name) => {
-  console.log({ columnName: `${name}` });
   fetch("/column/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ columnName: `${name}` }),
+    body: JSON.stringify({ column_name: `${name}` }),
   })
     .then((res) => res.json())
     .then((data) => {
@@ -32,6 +45,14 @@ request.addColumn = (name) => {
     .catch((error) => {
       console.log(`Error in request.addColumn ${error}`);
     });
+};
+
+request.deleteColumn = (id) => {
+  fetch("column/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ column_id: `${id}` }),
+  });
 };
 
 //CARDS___

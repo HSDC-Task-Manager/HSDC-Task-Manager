@@ -1,12 +1,18 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
 const UserContext = createContext({
-  username: '',
+  username: "",
   setUsername: () => {},
-  password: '',
+  password: "",
   setPassword: () => {},
   isLoggedIn: false,
   setIsLoggedIn: () => {},
+  userId: "",
+  setUserId: () => {},
+  boardData: "",
+  setBoardData: () => {},
+  boardId: "",
+  setBoardId: () => {},
 });
 
 export default UserContext;

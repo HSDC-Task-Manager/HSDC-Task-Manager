@@ -11,6 +11,12 @@ function LoginPage() {
     setPassword,
     isLoggedIn,
     setIsLoggedIn,
+    userId,
+    setUserId, //url
+    boardId,
+    setBoardId,
+    boardData,
+    setBoardData,
   } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -19,15 +25,18 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      console.log("SIGN IN BUTTON FIRED IN LOGIN PAGE");
       const loginData = { username, password };
       const result = await fetch("/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
-      console.log("RESULT FROM LOGIN REQUEST: ", result);
-      // TODO: fix this when the backend is ready - CS & NN
+      const data = await result.json();
+      console.log("boards received are: ", data.board);
+      // TODO: fix this when the backend is ready & grab userId- CS & NN
+      setBoardId(data.boardID);
+      setBoardData(data.board);
+      setUserId(data.id);
       setIsLoggedIn(true);
     } catch (error) {
       console.log("incorrect username or password", error);
@@ -37,7 +46,6 @@ function LoginPage() {
   // sends user to homepage if successfully logged in
   useEffect(() => {
     if (isLoggedIn) {
-      console.log("GOING TO HOMEPAGE FROM LOGIN PAGE");
       navigate("/homepage");
     }
   }, [isLoggedIn]);
@@ -47,7 +55,6 @@ function LoginPage() {
     e.preventDefault();
     navigate("/signup");
   };
-
   return (
     <div className="loginCont">
       <div className="user-login-box">

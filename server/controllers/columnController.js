@@ -6,8 +6,8 @@ columnController.addColumn = async (req, res, next) => {
   try {
     console.log("columnController.addColumn");
     console.log("req.body: ", req.body);
-    const { boardID, columnName } = req.body;
-    const columnVals = [columnName, boardID];
+    const { boardId, newColumnName } = req.body;
+    const columnVals = [newColumnName, boardId];
     const addColumnQ =
       "INSERT INTO lists (name, board_id) VALUES ($1, $2) RETURNING id;";
     const query = await db.query(addColumnQ, columnVals);
