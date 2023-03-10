@@ -1,23 +1,66 @@
-
-
 .columnCont {
   display: flex;
   flex-direction: column;
-  background-color: $color1;
+  background-color: $gray;
   color: $color3;
-  border-radius: 15px;
   padding: 10px;
+  border: 3px solid $black;
   gap: 10px;
   width: 175px;
 }
 
-.column-container {
+// .column-container {
+//   display: grid;
+//   gap: 10px;
+// }
+.columnHeader {
+  color: $black;
   display: flex;
-  gap: 10px;
+  font-size: x-large;
+  // justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
 }
 
 .cardCont {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.editColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-column-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.column-confirm-button,
+.column-cancel-button {
+  margin: 5px;
+}
+
+.edit-column-text {
+  padding: 5px;
+}
+
+.add-column-form {
+  display: flex;
+  flex-direction: row;
+  padding: 5px;
+}
+
+.column-form {
+  height: 82%;
+}
+
+.column-btn {
+
 }

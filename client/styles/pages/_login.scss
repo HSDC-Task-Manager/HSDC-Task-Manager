@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: $color4;
+  background-color: $white;
 }
 
 .user-login-box {
@@ -13,13 +13,13 @@
   display: flex;
   background-color: $color2;
   border: 5px $color1 solid;
-  border-radius: 15px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 40px;
   gap: 30px;
+  background-color: $gray;
 }
 
 .login-header {
@@ -50,16 +50,19 @@
 }
 
 .user-input {
-  width: 150px;
+  width: 100%;
   height: 30px;
-  border: 1px $color1 solid;
+  border: 3px $black solid;
   background-color: $color2;
-  border-radius: 5px;
+  font-size: medium;
 }
 
 .login-footer {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 10px;
   align-items: center;
+}
+
+.login-buttons {
 }

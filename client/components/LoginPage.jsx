@@ -90,7 +90,7 @@ function LoginPage() {
           </button>
         </form>
         <div className="login-footer">
-          Don&apos;t have an Account?{" "}
+          <div>Don&apos;t have an Account? </div>
           <button type="button" onClick={routeToSignUp}>
             Sign up here!
           </button>

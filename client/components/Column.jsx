@@ -153,7 +153,7 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
 
   return (
     <div className="columnCont">
-      <div>
+      <div className="columnHeader">
         {!showEditColumn && (
           <>
             {columnName}
@@ -167,27 +167,30 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
           </>
         )}
         {showEditColumn && (
-          <>
+          <div className="edit-column-container">
             <input
+              className="edit-column-text"
               type="text"
               value={newColumnName}
               onChange={(e) => setNewColumnName(e.target.value)}
             />
-            <button
-              className="column-confirm-button"
-              type="button"
-              onClick={handleEditColumn}
-            >
-              Submit
-            </button>
-            <button
-              className="column-cancel-button"
-              type="button"
-              onClick={cancelHandler}
-            >
-              Cancel
-            </button>
-          </>
+            <div className="editColumn">
+              <button
+                className="column-confirm-button"
+                type="button"
+                onClick={handleEditColumn}
+              >
+                Submit
+              </button>
+              <button
+                className="column-cancel-button"
+                type="button"
+                onClick={cancelHandler}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         )}
       </div>
       <div className="cardCont">{allCardsInColumn}</div>
