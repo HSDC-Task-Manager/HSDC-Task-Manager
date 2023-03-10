@@ -7,29 +7,31 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  gap: 30px;
+  // gap: 30px;
 }
 
 .homeHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
+  padding: 9px 20px;
   width: 90vw;
   height: 60px;
-  background-color: $color2;
-  border-radius: 15px;
-  border: 5px $color1 solid;
+  background-color: $lightgray;
+  border: 3px $black solid;
 }
 
+.home-page-title {
+  font-weight: bold;
+  font-size: larger;
+}
 .boardDisplay {
   display: flex;
   overflow: auto;
-  background-color: $color4;
-  border-radius: 15px;
+  background-color: $lightgray;
   flex-grow: 2;
   width: 90vw;
-  border: 5px $color5 solid;
+  border: 3px $black solid;
   padding: 20px;
   gap: 20px;
 }
@@ -42,4 +44,18 @@
   left: 0;
   z-index: 998;
   background: rgba(0, 0, 0, 0.3);
+}
+
+addColumnInput form {
+  padding: 20px;
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  input {
+    width: 100%;
+  }
+}
+.svg {
+  width: 10px;
+  height: 10px;
 }

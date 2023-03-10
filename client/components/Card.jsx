@@ -75,7 +75,7 @@ const Card = ({
     <div className="card" onDoubleClick={handleDoubleClick}>
       {!showEditCardModal && (
         <>
-          <div>{cardName}</div>
+          <div className="cardHeader">{cardName}</div>
           <div>{cardBody}</div>
         </>
       )}

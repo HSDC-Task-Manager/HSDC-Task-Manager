@@ -126,13 +126,13 @@ function HomePage() {
         </div>
       </header>
       {showColumnCreatorModal && (
-        <div className="">
-          <form className="" onSubmit={handleCreateColumn}>
+        <div className="addColumnInput">
+          <form className="add-column-form" onSubmit={handleCreateColumn}>
             <label>
-              <input className="" type="text" onChange={handleNameChange} />
+              <input className="column-form" type="text" onChange={handleNameChange} />
             </label>
-            <button type="submit">Submit</button>
-            <button type="button" onClick={handleCancelClick}>
+            <button className="column-btn" type="submit">Submit</button>
+            <button className="column-btn" type="button" onClick={handleCancelClick}>
               Cancel
             </button>
           </form>
