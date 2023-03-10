@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import Card from "./Card";
 import AddCardBtn from "./buttons/AddCardBtn";
 import UserContext from "../UserContext";
+import PencilIcon from "./icons/PencilIcon";
 
 /*
 "cards": [
@@ -26,6 +27,8 @@ import UserContext from "../UserContext";
 function Column({ columnId, columnName, boardId, cards, setColumns }) {
   const [allCardsInColumn, setAllCardsInColumn] = useState([]);
   const [showCardCreatorModal, setShowCardCreatorModal] = useState(false);
+  const [showEditColumn, setShowEditColumn] = useState(false);
+  const [newColumnName, setNewColumnName] = useState("");
   const [newCardName, setNewCardName] = useState("");
   const [newCardBody, setNewCardBody] = useState("");
 
@@ -38,6 +41,7 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
             cardId={card.card_id}
             cardName={card.card_name}
             cardBody={card.card_body}
+            setAllCardsInColumn={setAllCardsInColumn}
           />
         );
       });
@@ -71,6 +75,8 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
           cardId={cardId}
           cardName={newCardName}
           cardBody={newCardBody}
+          allCardsInColumn={allCardsInColumn}
+          setAllCardsInColumn={setAllCardsInColumn}
         />
       );
       // update state with the new card added in
@@ -91,6 +97,7 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
 
   const handleCardNameChange = (e) => setNewCardName(e.target.value);
   const handleCardBodyChange = (e) => setNewCardBody(e.target.value);
+  // const handleColumnNameChange = (e) => setNewColumnName(e.target.value);
 
   const handleDeleteColumn = async (e) => {
     e.preventDefault();
@@ -107,14 +114,82 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
     });
   };
 
-  const handleEditColumn = (e) => {
+  const handleEditColumn = async (e) => {
     e.preventDefault();
-    console.log("EDIT");
+    setShowEditColumn(false);
+    const response = await fetch(`column/${columnId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ columnName: newColumnName }),
+    });
+    setColumns((prevColumnData) => {
+      return prevColumnData.map((col) => {
+        if (col.props.columnId === columnId) {
+          return (
+            <Column
+              key={col.props.columnId}
+              columnName={newColumnName}
+              columnId={col.props.columnId}
+              boardId={col.props.boardId}
+              cards={col.props.cards}
+              allCardsInColumn={allCardsInColumn}
+              setColumns={setColumns}
+            />
+          );
+        } else return col;
+      });
+    });
+  };
+
+  const handleShowColumnEditor = (e) => {
+    e.preventDefault();
+    setShowEditColumn(true);
+    setNewColumnName(columnName);
+  };
+
+  const cancelHandler = () => {
+    setShowEditColumn(false);
   };
 
   return (
     <div className="columnCont">
-      <div>{columnName}</div>
+      <div>
+        {!showEditColumn && (
+          <>
+            {columnName}
+            <button
+              className="edit-column-button"
+              type="button"
+              onClick={handleShowColumnEditor}
+            >
+              <PencilIcon />
+            </button>
+          </>
+        )}
+        {showEditColumn && (
+          <>
+            <input
+              type="text"
+              value={newColumnName}
+              onChange={(e) => setNewColumnName(e.target.value)}
+            />
+            <button
+              className="column-confirm-button"
+              type="button"
+              onClick={handleEditColumn}
+            >
+              Submit
+            </button>
+            <button
+              className="column-cancel-button"
+              type="button"
+              onClick={cancelHandler}
+            >
+              Cancel
+            </button>
+          </>
+        )}
+      </div>
       <div className="cardCont">{allCardsInColumn}</div>
       {showCardCreatorModal && (
         <div className="">
@@ -157,13 +232,6 @@ function Column({ columnId, columnName, boardId, cards, setColumns }) {
         onClick={handleDeleteColumn}
       >
         Delete Column
-      </button>
-      <button
-        className="edit-column-button"
-        type="button"
-        onClick={handleEditColumn}
-      >
-        Edit Column Name
       </button>
     </div>
   );

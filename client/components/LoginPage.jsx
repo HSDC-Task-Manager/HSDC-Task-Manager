@@ -12,7 +12,7 @@ function LoginPage() {
     isLoggedIn,
     setIsLoggedIn,
     userId,
-    setUserId,
+    setUserId, //url
     boardId,
     setBoardId,
     boardData,
